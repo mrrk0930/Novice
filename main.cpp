@@ -9,12 +9,48 @@ struct Vector3 {
 	float z;
 };
 
-Vector3 Add(const Vector3& v1, const Vector3& v2);
-Vector3 Subtract(const Vector3& v1, const Vector3& v2);
-Vector3 Multiply(float scalar, const Vector3& v);
-float Dot(const Vector3& v1, const Vector3& v2);
-float Length(const Vector3& v);
-Vector3 Normalize(const Vector3& v);
+// 加算
+Vector3 Add(const Vector3& v1, const Vector3& v2) 
+{
+	return {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z}; 
+}
+
+// 減算
+Vector3 Subtract(const Vector3& v1, const Vector3& v2) 
+{
+	return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z}; 
+}
+
+// スカラー倍
+Vector3 Multiply(float scalar, const Vector3& v) 
+{
+	return {scalar * v.x, scalar * v.y, scalar * v.z}; 
+}
+
+// 内積
+float Dot(const Vector3& v1, const Vector3& v2) 
+{
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; 
+}
+
+// 長さ
+float Length(const Vector3& v) 
+{
+	return sqrtf(Dot(v, v)); 
+}
+
+// 正規化
+Vector3 Normalize(const Vector3& v) 
+{
+	float len = Length(v);
+
+	if (len == 0.0f) 
+	{
+		return {0.0f, 0.0f, 0.0f};
+	}
+
+	return {v.x / len, v.y / len, v.z / len};
+}
 
 static const int kColumnWidth = 60;
 
@@ -41,6 +77,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Vector3 v1{1.0f, 3.0f, -5.0f};
 	Vector3 v2{4.0f, -1.0f, 2.0f};
 	float k = {4.0f};
+	int kRowHight = 15;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -56,6 +93,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 
 		Vector3 resultAdd = Add(v1, v2);
+		Vector3 resultSubtract = Subtract(v1, v2);
+		Vector3 resultMultiply = Multiply(k, v2);
+		float resultDot = Dot(v1, v2);
+		float resultLength = Length(v1);
+		Vector3 resultNormalize = Normalize(v2);
 
 		///
 		/// ↑更新処理ここまで
@@ -64,6 +106,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 		/// ↓描画処理ここから
 		///
+
+		VectorScreenPrintf(0, 0, resultAdd, " : Add");
+		VectorScreenPrintf(0, kRowHight, resultSubtract, " : Subtract");
+		VectorScreenPrintf(0, kRowHight * 2, resultMultiply, " : Multiply");
+		Novice::ScreenPrintf(0, kRowHight * 3, "%.02f : Dot", resultDot);
+		Novice::ScreenPrintf(0, kRowHight * 4, "%.02f : Length", resultLength);
+		VectorScreenPrintf(0, kRowHight * 5, resultNormalize, " : Normalize");
 
 		///
 		/// ↑描画処理ここまで
