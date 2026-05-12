@@ -2,8 +2,6 @@
 #include <cmath>
 #include <math.h>
 
-
-
 ////////////////
 ///  Vector  ///
 ///////////////
