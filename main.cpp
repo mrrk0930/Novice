@@ -14,7 +14,50 @@ struct Matrix4x4 {
 	float m[4][4];
 };
 
-// 1. 平行移動行列
+// 行列の積
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) 
+{
+	Matrix4x4 result{};
+
+	for (int row = 0; row < 4; row++) 
+	{
+		for (int column = 0; column < 4; column++) 
+		{
+			result.m[row][column] = m1.m[row][0] * m2.m[0][column] + m1.m[row][1] * m2.m[1][column] + m1.m[row][2] * m2.m[2][column] + m1.m[row][3] * m2.m[3][column];
+		}
+	}
+
+	return result;
+}
+
+// X軸回転行列
+Matrix4x4 MakeRotateXMatrix(float radian) {
+	Matrix4x4 result = {
+	    {{1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, cosf(radian), sinf(radian), 0.0f}, {0.0f, -sinf(radian), cosf(radian), 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}}
+    };
+
+	return result;
+}
+
+// Y軸回転行列
+Matrix4x4 MakeRotateYMatrix(float radian) {
+	Matrix4x4 result = {
+	    {{cosf(radian), 0.0f, -sinf(radian), 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, {sinf(radian), 0.0f, cosf(radian), 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}}
+    };
+
+	return result;
+}
+
+// Z軸回転行列
+Matrix4x4 MakeRotateZMatrix(float radian) {
+	Matrix4x4 result = {
+	    {{cosf(radian), sinf(radian), 0.0f, 0.0f}, {-sinf(radian), cosf(radian), 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}}
+    };
+
+	return result;
+}
+
+// 平行移動行列
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate) 
 {
 
@@ -28,7 +71,7 @@ Matrix4x4 MakeTranslateMatrix(const Vector3& translate)
 	return result;
 }
 
-// 2. 拡大縮小行列
+// 拡大縮小行列
 Matrix4x4 MakeScaleMatrix(const Vector3& scale) 
 {
 
@@ -42,7 +85,7 @@ Matrix4x4 MakeScaleMatrix(const Vector3& scale)
 	return result;
 
 }
-// 3. 座標変換
+// 座標変換
 Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) 
 {
 
@@ -56,6 +99,23 @@ Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
 
 	return result;
 
+}
+
+// 3次元アフィン変換行列
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+
+	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
+	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
+	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
+
+	// 回転行列を合成
+	Matrix4x4 rotateMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
+
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+
+	return Multiply(scaleMatrix, Multiply(rotateMatrix, translateMatrix));
+	
 }
 
 
@@ -113,20 +173,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓更新処理ここから
 		///
 
-		Vector3 translate{4.1f, 2.6f, 0.8f};
-		Vector3 scale{1.5f, 5.2f, 7.3f};
-		Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
-		Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
-		Vector3 point{2.3f, 3.8f, 1.4f};
-		Matrix4x4 transformMatrix = 
-		{
-			1.0f, 2.0f, 3.0f, 4.0f,
-			3.0f, 1.0f, 1.0f, 2.0f, 
-			1.0f, 4.0f, 2.0f, 3.0f,
-			 2.0f, 2.0f, 1.0f, 3.0f
-		};
-		Vector3 transformed = Transform(point, transformMatrix);
-
+		Vector3 scale{1.2f, 0.79f, -2.1f};
+		Vector3 rotate{0.4f, 1.43f, -0.8f};
+		Vector3 translate{2.7f, -4.15f, 1.57f};
+		Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
+		
 		///
 		/// ↑更新処理ここまで
 		///
@@ -135,9 +186,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓描画処理ここから
 		///
 
-		VectorScreenPrintf(0, 0, "transformed", transformed);
-		MatrixScreenPrintf(0, kRowHight, "translateMatrix", translateMatrix);
-		MatrixScreenPrintf(0, kRowHight * 6, "scaleMatrix", scaleMatrix);
+		MatrixScreenPrintf(0, 0, "worldMatrix", worldMatrix);
 
 		///
 		/// ↑描画処理ここまで
