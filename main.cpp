@@ -47,38 +47,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓更新処理ここから
 		///
 
-		// 移動速度
-		const float moveSpeed = 0.125f;
-
-		// 回転速度
-		const float rotateSpeed = 0.05f;
-
-		// Y軸回転
-		rotate.y += rotateSpeed; 
-		
-		// 前進
-		if (keys[DIK_W]) 
-		{
-			translate.z += moveSpeed;
-		}
-
-		// 後退
-		if (keys[DIK_S]) 
-		{
-			translate.z -= moveSpeed;
-		}
-
-		// 右移動
-		if (keys[DIK_D]) 
-		{
-			translate.x += moveSpeed;
-		}
-
-		// 左移動
-		if (keys[DIK_A]) 
-		{
-			translate.x -= moveSpeed;
-		}
+		//　移動処理
+		UpdateMove(translate, rotate, keys);
 
 		//各種行列の計算
 		Matrix4x4 worldMatrix = MakeAffineMatrix({1.0f, 1.0f, 1.0f}, rotate, translate);

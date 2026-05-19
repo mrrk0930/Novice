@@ -111,6 +111,13 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
 
 ///////////////
+///  Move  ////
+///////////////
+
+//移動・回転
+void UpdateMove(Vector3& translate, Vector3& rotate, char keys[]);
+
+///////////////
 ///  Print  ///
 ///////////////
 

@@ -440,6 +440,55 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 }
 
 ///////////////
+///  Move  ////
+///////////////
+
+// 移動・回転
+void UpdateMove(Vector3& translate, Vector3& rotate, char keys[]) 
+{
+
+	// 移動速度
+	const float moveSpeed = 0.125f;
+
+	// 回転速度
+	const float rotateSpeed = 0.05f;
+
+	// Y軸回転
+	rotate.y += rotateSpeed;
+
+	// 前進
+	if (keys[DIK_W]) {
+		translate.z += moveSpeed;
+	}
+
+	// 後退
+	if (keys[DIK_S]) {
+		translate.z -= moveSpeed;
+	}
+
+	// 右移動
+	if (keys[DIK_D]) {
+		translate.x += moveSpeed;
+	}
+
+	// 左移動
+	if (keys[DIK_A]) {
+		translate.x -= moveSpeed;
+	}
+
+	// 上移動
+	if (keys[DIK_Q]) {
+		translate.y += moveSpeed;
+	}
+
+	// 下移動
+	if (keys[DIK_E]) {
+		translate.y -= moveSpeed;
+	}
+
+}
+
+///////////////
 ///  Print  ///
 ///////////////
 
