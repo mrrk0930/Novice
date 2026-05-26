@@ -30,6 +30,14 @@ struct Sphere
 
 };
 
+struct Segment 
+{
+
+	Vector3 origin;
+	Vector3 diff;
+
+};
+
 ////////////////
 ///  Vector  ///
 ////////////////
@@ -136,9 +144,18 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
 //カメラ
 Matrix4x4 MakeViewProjectionMatrix(const Vector3& cameraTranslate, const Vector3& cameraRotate, float windowWidth, float windowHeight);
 
-//ImGui
+//球ImGui
 void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere);
 
+////////////////////////
+///  GeometryUtility ///
+////////////////////////
+
+// 射影
+Vector3 Project(const Vector3& v1, const Vector3& v2);
+
+// 最近接点
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 
 ///////////////
 ///  Move  ////

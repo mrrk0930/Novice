@@ -503,30 +503,39 @@ void UpdateMove(Vector3& translate, Vector3& rotate, char keys[])
 //////////////
 
 // グリッド
-void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) 
-{
-
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	const float kGridHalfWidth = 2.0f;
 	const uint32_t kSubdivision = 10;
 
 	const float kGridEvery = (kGridHalfWidth * 2.0f) / float(kSubdivision);
 
-	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) 
-	{
-
+	// 奥→手前
+	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) {
 		float x = -kGridHalfWidth + xIndex * kGridEvery;
 
-		Vector3 start = {x, 0, -kGridHalfWidth};
-		Vector3 end = {x, 0, kGridHalfWidth};
+		Vector3 start = {x, 0.0f, -kGridHalfWidth};
+		Vector3 end = {x, 0.0f, kGridHalfWidth};
 
 		Vector3 startScreen = Transform(Transform(start, viewProjectionMatrix), viewportMatrix);
 
 		Vector3 endScreen = Transform(Transform(end, viewProjectionMatrix), viewportMatrix);
 
 		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y), 0xAAAAAAFF);
-
 	}
 
+	// 左→右
+	for (uint32_t zIndex = 0; zIndex <= kSubdivision; ++zIndex) {
+		float z = -kGridHalfWidth + zIndex * kGridEvery;
+
+		Vector3 start = {-kGridHalfWidth, 0.0f, z};
+		Vector3 end = {kGridHalfWidth, 0.0f, z};
+
+		Vector3 startScreen = Transform(Transform(start, viewProjectionMatrix), viewportMatrix);
+
+		Vector3 endScreen = Transform(Transform(end, viewProjectionMatrix), viewportMatrix);
+
+		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y), 0xAAAAAAFF);
+	}
 }
 
 // 球
@@ -615,7 +624,7 @@ Matrix4x4 MakeViewProjectionMatrix(const Vector3& cameraTranslate, const Vector3
 
 }
 
-// ImGui
+// 球ImGui
 void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere) 
 {
 
@@ -631,6 +640,47 @@ void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere
 
 	ImGui::End();
 
+}
+
+////////////////////////
+///  GeometryUtility ///
+////////////////////////
+
+// 射影
+Vector3 Project(const Vector3& v1, const Vector3& v2) {
+	float lengthSq = Dot(v2, v2);
+
+	if (lengthSq == 0.0f) {
+		return {0.0f, 0.0f, 0.0f};
+	}
+
+	float t = Dot(v1, v2) / lengthSq;
+
+	return Multiply(t, v2);
+}
+
+// 最近接点
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment) {
+	float lengthSq = Dot(segment.diff, segment.diff);
+
+	if (lengthSq == 0.0f) {
+		return segment.origin;
+	}
+
+	Vector3 pointVector = Subtract(point, segment.origin);
+
+	float t = Dot(pointVector, segment.diff) / lengthSq;
+
+	// 線分内に制限
+	if (t < 0.0f) {
+		t = 0.0f;
+	}
+
+	if (t > 1.0f) {
+		t = 1.0f;
+	}
+
+	return Add(segment.origin, Multiply(t, segment.diff));
 }
 
 ///////////////
