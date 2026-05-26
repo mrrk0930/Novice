@@ -1,9 +1,83 @@
 #include <Novice.h>
-#include "MathFunc.h"
 #include <cmath>
-#include <math.h>
+
 
 const char kWindowTitle[] = "GC2B_05_ムロサキ_リク_タイトル";
+
+struct Vector3 {
+	float x;
+	float y;
+	float z;
+};
+
+struct Matrix4x4 {
+	float m[4][4];
+};
+
+// 行列の積
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 result{};
+
+	for (int row = 0; row < 4; row++) {
+		for (int column = 0; column < 4; column++) {
+			result.m[row][column] = m1.m[row][0] * m2.m[0][column] + m1.m[row][1] * m2.m[1][column] + m1.m[row][2] * m2.m[2][column] + m1.m[row][3] * m2.m[3][column];
+		}
+	}
+
+	return result;
+}
+
+// X軸回転行列
+Matrix4x4 MakeRotateXMatrix(float radian) {
+	Matrix4x4 result = {
+	    {{1.0f, 0.0f, 0.0f, 0.0f},
+	     {0.0f, static_cast<float>(std::cos(radian)), static_cast<float>(std::sin(radian)), 0.0f},
+	     {0.0f, static_cast<float>(-std::sin(radian)), static_cast<float>(std::cos(radian)), 0.0f},
+	     {0.0f, 0.0f, 0.0f, 1.0f}}
+    };
+
+	return result;
+}
+
+// Y軸回転行列
+Matrix4x4 MakeRotateYMatrix(float radian) {
+	Matrix4x4 result = {
+	    {{static_cast<float>(std::cos(radian)), 0.0f, static_cast<float>(-std::sin(radian)), 0.0f},
+	     {0.0f, 1.0f, 0.0f, 0.0f},
+	     {static_cast<float>(std::sin(radian)), 0.0f, static_cast<float>(std::cos(radian)), 0.0f},
+	     {0.0f, 0.0f, 0.0f, 1.0f}}
+    };
+
+	return result;
+}
+
+// Z軸回転行列
+Matrix4x4 MakeRotateZMatrix(float radian) {
+	Matrix4x4 result = {
+	    {{static_cast<float>(std::cos(radian)), static_cast<float>(std::sin(radian)), 0.0f, 0.0f},
+	     {static_cast<float>(-std::sin(radian)), static_cast<float>(std::cos(radian)), 0.0f, 0.0f},
+	     {0.0f, 0.0f, 1.0f, 0.0f},
+	     {0.0f, 0.0f, 0.0f, 1.0f}}
+    };
+
+	return result;
+}
+
+// 表示
+static const int kRowHight = 20;
+static const int kColumnWidth = 60;
+
+void MatrixScreenPrintf(int x, int y, const char* label, const Matrix4x4& matrix) {
+	Novice::ScreenPrintf(x, y, "%s", label);
+
+	for (int row = 0; row < 4; ++row) {
+
+		for (int column = 0; column < 4; ++column) {
+
+			Novice::ScreenPrintf(x + column * kColumnWidth, y + (row + 1) * kRowHight, "%6.02f", matrix.m[row][column]);
+		}
+	}
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -14,25 +88,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
-
-	const int KWindowWidth = 1280;
-	const int KWindowHeight = 720;
-
-	Vector3 cameraPosition = {0.0f, 0.0f, -5.0f};
-
-	Vector3 KLocalVertices[3] = {
-	    {0.0f,  0.25f,  0.0f},
-	    {0.25f,  -0.25f, 0.0f},
-	    {-0.25f, -0.25f, 0.0f},
-	};
-
-	//クロス積の確認用
-	Vector3 v1{1.2f, -3.9f, 2.5f};
-	Vector3 v2{2.8f, 0.4f, -1.3f};
-	Vector3 cross = Cross(v1, v2);
-
-	Vector3 rotate{};
-	Vector3 translate{};
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -47,24 +102,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓更新処理ここから
 		///
 
-		//　移動処理
-		UpdateMove(translate, rotate, keys);
-
-		//各種行列の計算
-		Matrix4x4 worldMatrix = MakeAffineMatrix({1.0f, 1.0f, 1.0f}, rotate, translate);
-		Matrix4x4 cameraMatrix = MakeAffineMatrix({1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, cameraPosition);
-		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(KWindowWidth) / float(KWindowHeight), 0.1f, 100.0f);
-		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(KWindowWidth), float(KWindowHeight), 0.0f, 1.0f);
-		Vector3 screenVertices[3];
-		for (uint32_t i = 0; i < 3; ++i) 
-		{
-		
-			Vector3 ndcvVertex = Transform(KLocalVertices[i], worldViewProjectionMatrix);
-			screenVertices[i] = Transform(ndcvVertex, viewportMatrix);
-
-		}
+		Vector3 rotate{0.4f, 1.43f, -0.8f};
+		Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
+		Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
+		Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
+		Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
 
 		///
 		/// ↑更新処理ここまで
@@ -74,13 +116,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓描画処理ここから
 		///
 
-		VectorScreenPrintf(0, 0, "Cross", cross);
-
-		Novice::DrawTriangle(
-		    int(screenVertices[0].x), int(screenVertices[0].y), 
-			int(screenVertices[1].x), int(screenVertices[1].y),
-			int(screenVertices[2].x), int(screenVertices[2].y), 
-			RED, kFillModeSolid);
+		MatrixScreenPrintf(0, 0, "rotateXMatrix", rotateXMatrix);
+		MatrixScreenPrintf(0, kRowHight * 5, "rotateYMatrix", rotateYMatrix);
+		MatrixScreenPrintf(0, kRowHight * 5 * 2, "rotateZMatrix", rotateZMatrix);
+		MatrixScreenPrintf(0, kRowHight * 5 * 3, "rotateXYZMatrix", rotateXYZMatrix);
 
 		///
 		/// ↑描画処理ここまで

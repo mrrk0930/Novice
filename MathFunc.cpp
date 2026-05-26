@@ -1,10 +1,10 @@
 #include "MathFunc.h"
 #include <cmath>
-#include <math.h>
+
 
 ////////////////
 ///  Vector  ///
-///////////////
+////////////////
 
 // ベクトルの加算
 Vector3 Add(const Vector3& v1, const Vector3& v2) 
@@ -56,7 +56,7 @@ float Dot(const Vector3& v1, const Vector3& v2)
 
 }
 
-//クロス積（外積）
+// クロス積（外積）
 Vector3 Cross(const Vector3& v1, const Vector3& v2) {
 	Vector3 result;
 

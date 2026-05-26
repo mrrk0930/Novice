@@ -23,7 +23,7 @@ const int kColumnWidth = 60;
 
 ////////////////
 ///  Vector  ///
-///////////////
+////////////////
 
 //ベクトルの加算
 Vector3 Add(const Vector3& v1, const Vector3& v2);
