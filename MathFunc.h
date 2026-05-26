@@ -1,5 +1,6 @@
 #pragma once
 #include <Novice.h>
+#include <cstdint>
 
 struct Vector3 
 {
@@ -20,6 +21,14 @@ struct Matrix4x4
 //文字の幅高さ
 const int kRowHeight = 20;
 const int kColumnWidth = 60;
+
+struct Sphere 
+{
+
+	Vector3 center;
+	float radius;
+
+};
 
 ////////////////
 ///  Vector  ///
@@ -109,6 +118,27 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 
 //ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
+
+//////////////
+///  Draw  ///
+//////////////
+
+//グリッド
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+
+//球
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+/////////////////
+///  Utility  ///
+/////////////////
+
+//カメラ
+Matrix4x4 MakeViewProjectionMatrix(const Vector3& cameraTranslate, const Vector3& cameraRotate, float windowWidth, float windowHeight);
+
+//ImGui
+void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere);
+
 
 ///////////////
 ///  Move  ////

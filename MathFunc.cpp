@@ -1,5 +1,7 @@
 #include "MathFunc.h"
 #include <cmath>
+#include <imgui.h>
+#include <numbers>
 
 
 ////////////////
@@ -493,6 +495,141 @@ void UpdateMove(Vector3& translate, Vector3& rotate, char keys[])
 	if (keys[DIK_E]) {
 		translate.y -= moveSpeed;
 	}
+
+}
+
+//////////////
+///  Draw  ///
+//////////////
+
+// グリッド
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) 
+{
+
+	const float kGridHalfWidth = 2.0f;
+	const uint32_t kSubdivision = 10;
+
+	const float kGridEvery = (kGridHalfWidth * 2.0f) / float(kSubdivision);
+
+	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) 
+	{
+
+		float x = -kGridHalfWidth + xIndex * kGridEvery;
+
+		Vector3 start = {x, 0, -kGridHalfWidth};
+		Vector3 end = {x, 0, kGridHalfWidth};
+
+		Vector3 startScreen = Transform(Transform(start, viewProjectionMatrix), viewportMatrix);
+
+		Vector3 endScreen = Transform(Transform(end, viewProjectionMatrix), viewportMatrix);
+
+		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y), 0xAAAAAAFF);
+
+	}
+
+}
+
+// 球
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) 
+{
+
+	const uint32_t kSubdivision = 16;
+
+	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / kSubdivision;
+
+	const float kLatEvery = std::numbers::pi_v<float> / kSubdivision;
+
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) 
+	{
+
+		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * latIndex;
+
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) 
+		{
+
+			float lon = lonIndex * kLonEvery;
+
+			// a
+			Vector3 a
+			{
+			    sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon),
+
+			    sphere.center.y + sphere.radius * std::sin(lat),
+
+			    sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon)
+			};
+
+			// b（緯度方向）
+			Vector3 b
+			{
+			    sphere.center.x + sphere.radius * std::cos(lat + kLatEvery) * std::cos(lon),
+
+			    sphere.center.y + sphere.radius * std::sin(lat + kLatEvery),
+
+			    sphere.center.z + sphere.radius * std::cos(lat + kLatEvery) * std::sin(lon)
+			};
+
+			// c（経度方向）
+			Vector3 c
+			{
+			    sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon + kLonEvery),
+
+			    sphere.center.y + sphere.radius * std::sin(lat),
+
+			    sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon + kLonEvery)
+			};
+
+			Vector3 aScreen = Transform(Transform(a, viewProjectionMatrix), viewportMatrix);
+
+			Vector3 bScreen = Transform(Transform(b, viewProjectionMatrix), viewportMatrix);
+
+			Vector3 cScreen = Transform(Transform(c, viewProjectionMatrix), viewportMatrix);
+
+			// 緯度線
+			Novice::DrawLine(int(aScreen.x), int(aScreen.y), int(bScreen.x), int(bScreen.y), color);
+
+			// 経度線
+			Novice::DrawLine(int(aScreen.x), int(aScreen.y), int(cScreen.x), int(cScreen.y), color);
+
+		}
+	
+	}
+
+}
+
+/////////////////
+///  Utility  ///
+/////////////////
+
+// カメラ
+Matrix4x4 MakeViewProjectionMatrix(const Vector3& cameraTranslate, const Vector3& cameraRotate, float windowWidth, float windowHeight) 
+{
+
+	Matrix4x4 cameraMatrix = MakeAffineMatrix({1, 1, 1}, cameraRotate, cameraTranslate);
+
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, windowWidth / windowHeight, 0.1f, 100.0f);
+
+	return Multiply(viewMatrix, projectionMatrix);
+
+}
+
+// ImGui
+void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere) 
+{
+
+	ImGui::Begin("Window");
+
+	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+
+	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+
+	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+
+	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+
+	ImGui::End();
 
 }
 
