@@ -272,8 +272,11 @@ Matrix4x4 MakeRotateXMatrix(float radian)
 
 	Matrix4x4 result = 
 	{
-	    
-		{{1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, cosf(radian), sinf(radian), 0.0f}, {0.0f, -sinf(radian), cosf(radian), 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}}
+
+	    {{1.0f, 0.0f, 0.0f, 0.0f},
+	     {0.0f, static_cast<float>(std::cos(radian)), static_cast<float>(std::sin(radian)), 0.0f},
+	     {0.0f, static_cast<float>(-std::sin(radian)), static_cast<float>(std::cos(radian)), 0.0f},
+	     {0.0f, 0.0f, 0.0f, 1.0f}}
     
 	};
 
@@ -284,12 +287,14 @@ Matrix4x4 MakeRotateXMatrix(float radian)
 // Y軸の回転行列
 Matrix4x4 MakeRotateYMatrix(float radian) 
 {
-
 	Matrix4x4 result = 
 	{
-	  
-		{{cosf(radian), 0.0f, -sinf(radian), 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, {sinf(radian), 0.0f, cosf(radian), 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}}
-    
+
+	    {{static_cast<float>(std::cos(radian)), 0.0f, static_cast<float>(-std::sin(radian)), 0.0f},
+	     {0.0f, 1.0f, 0.0f, 0.0f},
+	     {static_cast<float>(std::sin(radian)), 0.0f, static_cast<float>(std::cos(radian)), 0.0f},
+	     {0.0f, 0.0f, 0.0f, 1.0f}}
+   
 	};
 
 	return result;
@@ -302,9 +307,12 @@ Matrix4x4 MakeRotateZMatrix(float radian)
 
 	Matrix4x4 result = 
 	{
-	
-		{{cosf(radian), sinf(radian), 0.0f, 0.0f}, {-sinf(radian), cosf(radian), 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}}
-    
+
+	    {{static_cast<float>(std::cos(radian)), static_cast<float>(std::sin(radian)), 0.0f, 0.0f},
+	     {static_cast<float>(-std::sin(radian)), static_cast<float>(std::cos(radian)), 0.0f, 0.0f},
+	     {0.0f, 0.0f, 1.0f, 0.0f},
+	     {0.0f, 0.0f, 0.0f, 1.0f}}
+   
 	};
 
 	return result;
@@ -391,7 +399,7 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 
 	Matrix4x4 result{};
 
-	float f = 1.0f / tanf(fovY / 2.0f);
+	float f = 1.0f / static_cast<float>(std::tan(fovY / 2.0f));
 
 	result.m[0][0] = f / aspectRatio;
 	result.m[1][1] = f;

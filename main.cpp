@@ -1,83 +1,7 @@
+#include "MathFunc.h"
 #include <Novice.h>
-#include <cmath>
-
 
 const char kWindowTitle[] = "GC2B_05_ムロサキ_リク_タイトル";
-
-struct Vector3 {
-	float x;
-	float y;
-	float z;
-};
-
-struct Matrix4x4 {
-	float m[4][4];
-};
-
-// 行列の積
-Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
-	Matrix4x4 result{};
-
-	for (int row = 0; row < 4; row++) {
-		for (int column = 0; column < 4; column++) {
-			result.m[row][column] = m1.m[row][0] * m2.m[0][column] + m1.m[row][1] * m2.m[1][column] + m1.m[row][2] * m2.m[2][column] + m1.m[row][3] * m2.m[3][column];
-		}
-	}
-
-	return result;
-}
-
-// X軸回転行列
-Matrix4x4 MakeRotateXMatrix(float radian) {
-	Matrix4x4 result = {
-	    {{1.0f, 0.0f, 0.0f, 0.0f},
-	     {0.0f, static_cast<float>(std::cos(radian)), static_cast<float>(std::sin(radian)), 0.0f},
-	     {0.0f, static_cast<float>(-std::sin(radian)), static_cast<float>(std::cos(radian)), 0.0f},
-	     {0.0f, 0.0f, 0.0f, 1.0f}}
-    };
-
-	return result;
-}
-
-// Y軸回転行列
-Matrix4x4 MakeRotateYMatrix(float radian) {
-	Matrix4x4 result = {
-	    {{static_cast<float>(std::cos(radian)), 0.0f, static_cast<float>(-std::sin(radian)), 0.0f},
-	     {0.0f, 1.0f, 0.0f, 0.0f},
-	     {static_cast<float>(std::sin(radian)), 0.0f, static_cast<float>(std::cos(radian)), 0.0f},
-	     {0.0f, 0.0f, 0.0f, 1.0f}}
-    };
-
-	return result;
-}
-
-// Z軸回転行列
-Matrix4x4 MakeRotateZMatrix(float radian) {
-	Matrix4x4 result = {
-	    {{static_cast<float>(std::cos(radian)), static_cast<float>(std::sin(radian)), 0.0f, 0.0f},
-	     {static_cast<float>(-std::sin(radian)), static_cast<float>(std::cos(radian)), 0.0f, 0.0f},
-	     {0.0f, 0.0f, 1.0f, 0.0f},
-	     {0.0f, 0.0f, 0.0f, 1.0f}}
-    };
-
-	return result;
-}
-
-// 表示
-static const int kRowHight = 20;
-static const int kColumnWidth = 60;
-
-void MatrixScreenPrintf(int x, int y, const char* label, const Matrix4x4& matrix) {
-	Novice::ScreenPrintf(x, y, "%s", label);
-
-	for (int row = 0; row < 4; ++row) {
-
-		for (int column = 0; column < 4; ++column) {
-
-			Novice::ScreenPrintf(x + column * kColumnWidth, y + (row + 1) * kRowHight, "%6.02f", matrix.m[row][column]);
-		}
-	}
-}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -91,6 +15,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
+
 		// フレームの開始
 		Novice::BeginFrame();
 
@@ -103,9 +28,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 
 		Vector3 rotate{0.4f, 1.43f, -0.8f};
+
+		// 回転行列作成
 		Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
 		Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
 		Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
+
+		// XYZ合成回転行列
 		Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
 
 		///
@@ -117,9 +46,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 
 		MatrixScreenPrintf(0, 0, "rotateXMatrix", rotateXMatrix);
-		MatrixScreenPrintf(0, kRowHight * 5, "rotateYMatrix", rotateYMatrix);
-		MatrixScreenPrintf(0, kRowHight * 5 * 2, "rotateZMatrix", rotateZMatrix);
-		MatrixScreenPrintf(0, kRowHight * 5 * 3, "rotateXYZMatrix", rotateXYZMatrix);
+
+		MatrixScreenPrintf(0, kRowHeight * 5, "rotateYMatrix", rotateYMatrix);
+
+		MatrixScreenPrintf(0, kRowHeight * 10, "rotateZMatrix", rotateZMatrix);
+
+		MatrixScreenPrintf(0, kRowHeight * 15, "rotateXYZMatrix", rotateXYZMatrix);
 
 		///
 		/// ↑描画処理ここまで
@@ -136,5 +68,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ライブラリの終了
 	Novice::Finalize();
+
 	return 0;
 }
