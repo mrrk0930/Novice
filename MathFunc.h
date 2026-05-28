@@ -164,6 +164,13 @@ Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 //移動・回転
 void UpdateMove(Vector3& translate, Vector3& rotate, char keys[]);
 
+/////////////////
+///  Action  ////
+/////////////////
+
+//球と球の衝突判定
+bool IsCollision(const Sphere& s1, const Sphere& s2);
+
 ///////////////
 ///  Print  ///
 ///////////////
