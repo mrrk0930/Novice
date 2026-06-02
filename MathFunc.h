@@ -149,6 +149,9 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
 //平面
 void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
+//線分
+void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -161,6 +164,9 @@ void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere
 
 //平面ImGui
 void UpdatePlaneImGui(Sphere& sphere, Plane& plane);
+
+//線分ImGui
+void UpdateSegmentImGui(Segment& segment, Plane& plane);
 
 ////////////////////////
 ///  GeometryUtility ///
@@ -188,6 +194,9 @@ bool IsCollisionSS(const Sphere& s1, const Sphere& s2);
 
 //球と平面の衝突判定
 bool IsCollisionSP(const Sphere& sphere, const Plane& plane);
+
+//平面と線分
+bool IsCollisionPL(const Segment& segment, const Plane& plane);
 
 /////////////////////
 ///  Acquisition  ///

@@ -24,12 +24,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Vector3 cameraRotate{0.26f, 0.0f, 0.0f};
 
 	// 球
-	Sphere sphere
+	Segment segment
 	{
+
+	    {-1.0f, 1.0f,  0.0f}, 
+	    {2.0f,  -2.0f, 0.0f}  
 	
-		{0.0f, 1.0f, 0.0f},
-        0.5f
-    
 	};
 
 	Plane plane
@@ -53,9 +53,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓更新処理ここから
 		///
 		
-		UpdatePlaneImGui(sphere, plane);
+		UpdateSegmentImGui(segment, plane);
 
-		bool isHit = IsCollisionSP(sphere, plane);
+		bool isHit = IsCollisionPL(segment, plane);
 
 		// 行列
 		Matrix4x4 viewProjectionMatrix = MakeViewProjectionMatrix(cameraTranslate, cameraRotate, kWindowWidth, kWindowHeight);
@@ -69,12 +69,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 		/// ↓描画処理ここから
 		///
-		
+
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		DrawPlane(plane, viewProjectionMatrix, viewportMatrix, WHITE);
 
-		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
+		DrawSegment(segment, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
 
 		///
 		/// ↑描画処理ここまで

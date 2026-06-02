@@ -602,6 +602,22 @@ void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const 
 
 }
 
+// 線分
+void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) 
+{
+
+	Vector3 start = segment.origin;
+
+	Vector3 end = Add(segment.origin, segment.diff);
+
+	Vector3 startScreen = Transform(Transform(start, viewProjectionMatrix), viewportMatrix);
+
+	Vector3 endScreen = Transform(Transform(end, viewProjectionMatrix), viewportMatrix);
+
+	Novice::DrawLine((int)startScreen.x, (int)startScreen.y, (int)endScreen.x, (int)endScreen.y, color);
+
+}
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -646,6 +662,28 @@ void UpdatePlaneImGui(Sphere& sphere, Plane& plane)
 	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
 
 	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f, 0.01f, 10.0f);
+
+	ImGui::Separator();
+
+	ImGui::DragFloat3("PlaneNormal", &plane.normal.x, 0.01f);
+
+	plane.normal = Normalize(plane.normal);
+
+	ImGui::DragFloat("PlaneDistance", &plane.distance, 0.01f);
+
+	ImGui::End();
+
+}
+
+// 線分ImGui
+void UpdateSegmentImGui(Segment& segment, Plane& plane) 
+{
+
+	ImGui::Begin("Collision");
+
+	ImGui::DragFloat3("SegmentOrigin", &segment.origin.x, 0.01f);
+
+	ImGui::DragFloat3("SegmentDiff", &segment.diff.x, 0.01f);
 
 	ImGui::Separator();
 
@@ -770,6 +808,26 @@ bool IsCollisionSP(const Sphere& sphere, const Plane& plane)
 	float distance = Dot(sphere.center, plane.normal) - plane.distance;
 
 	return fabsf(distance) <= sphere.radius;
+
+}
+
+// 平面と線分
+bool IsCollisionPL(const Segment& segment, const Plane& plane) 
+{
+
+	float denominator = Dot(segment.diff, plane.normal);
+
+	// 平行
+	if (fabsf(denominator) < 0.00001f) 
+	{
+	
+		return false;
+	
+	}
+
+	float t = (plane.distance - Dot(segment.origin, plane.normal)) / denominator;
+
+	return (t >= 0.0f && t <= 1.0f);
 
 }
 
