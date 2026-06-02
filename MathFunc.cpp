@@ -557,6 +557,51 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
 
 }
 
+// 平面
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) 
+{
+
+	Vector3 center = Multiply(plane.distance, plane.normal);
+
+	Vector3 perpendiculars[4];
+
+	perpendiculars[0] = Normalize(Perpendicular(plane.normal));
+
+	perpendiculars[1] = Multiply(-1.0f, perpendiculars[0]);
+
+	perpendiculars[2] = Normalize(Cross(plane.normal, perpendiculars[0]));
+
+	perpendiculars[3] = Multiply(-1.0f, perpendiculars[2]);
+
+	Vector3 corner[4];
+
+	corner[0] = Add(Add(center, Multiply(2.0f, perpendiculars[0])), Multiply(2.0f, perpendiculars[2]));
+
+	corner[1] = Add(Add(center, Multiply(2.0f, perpendiculars[1])), Multiply(2.0f, perpendiculars[2]));
+
+	corner[2] = Add(Add(center, Multiply(2.0f, perpendiculars[1])), Multiply(2.0f, perpendiculars[3]));
+
+	corner[3] = Add(Add(center, Multiply(2.0f, perpendiculars[0])), Multiply(2.0f, perpendiculars[3]));
+
+	Vector3 screen[4];
+
+	for (int i = 0; i < 4; i++) 
+	{
+	
+		screen[i] = Transform(Transform(corner[i], viewProjectionMatrix), viewportMatrix);
+	
+	}
+
+	Novice::DrawLine((int)screen[0].x, (int)screen[0].y, (int)screen[1].x, (int)screen[1].y, color);
+
+	Novice::DrawLine((int)screen[1].x, (int)screen[1].y, (int)screen[2].x, (int)screen[2].y, color);
+
+	Novice::DrawLine((int)screen[2].x, (int)screen[2].y, (int)screen[3].x, (int)screen[3].y, color);
+
+	Novice::DrawLine((int)screen[3].x, (int)screen[3].y, (int)screen[0].x, (int)screen[0].y, color);
+
+}
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -588,6 +633,27 @@ void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere
 	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
 
 	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+
+	ImGui::End();
+
+}
+// 平面ImGui
+void UpdatePlaneImGui(Sphere& sphere, Plane& plane) 
+{
+
+	ImGui::Begin("Collision");
+
+	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+
+	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f, 0.01f, 10.0f);
+
+	ImGui::Separator();
+
+	ImGui::DragFloat3("PlaneNormal", &plane.normal.x, 0.01f);
+
+	plane.normal = Normalize(plane.normal);
+
+	ImGui::DragFloat("PlaneDistance", &plane.distance, 0.01f);
 
 	ImGui::End();
 
@@ -686,7 +752,7 @@ void UpdateMove(Vector3& translate, Vector3& rotate, char keys[]) {
 /////////////////
 
 // 球と球の衝突判定
-bool IsCollision(const Sphere& s1, const Sphere& s2) {
+bool IsCollisionSS(const Sphere& s1, const Sphere& s2) {
 
 	Vector3 diff = Subtract(s1.center, s2.center);
 
@@ -695,6 +761,29 @@ bool IsCollision(const Sphere& s1, const Sphere& s2) {
 	float radiusSum = s1.radius + s2.radius;
 
 	return distance <= radiusSum;
+}
+
+// 球と平面の衝突判定
+bool IsCollisionSP(const Sphere& sphere, const Plane& plane) 
+{
+
+	float distance = Dot(sphere.center, plane.normal) - plane.distance;
+
+	return fabsf(distance) <= sphere.radius;
+
+}
+
+/////////////////////
+///  Acquisition  ///
+/////////////////////
+
+// 垂直ベクトル取得
+Vector3 Perpendicular(const Vector3& vector) {
+	if (vector.x != 0.0f || vector.y != 0.0f) {
+		return {-vector.y, vector.x, 0.0f};
+	}
+
+	return {0.0f, -vector.z, vector.y};
 }
 
 ///////////////

@@ -38,6 +38,15 @@ struct Segment
 
 };
 
+struct Plane 
+{
+
+	Vector3 normal;
+	float distance;
+
+};
+
+
 ////////////////
 ///  Vector  ///
 ////////////////
@@ -137,6 +146,9 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 //球
 void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
+//平面
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -147,14 +159,17 @@ Matrix4x4 MakeViewProjectionMatrix(const Vector3& cameraTranslate, const Vector3
 //球ImGui
 void UpdateImGui(Vector3& cameraTranslate, Vector3& cameraRotate, Sphere& sphere);
 
+//平面ImGui
+void UpdatePlaneImGui(Sphere& sphere, Plane& plane);
+
 ////////////////////////
 ///  GeometryUtility ///
 ////////////////////////
 
-// 射影
+//射影
 Vector3 Project(const Vector3& v1, const Vector3& v2);
 
-// 最近接点
+//最近接点
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 
 ///////////////
@@ -169,7 +184,17 @@ void UpdateMove(Vector3& translate, Vector3& rotate, char keys[]);
 /////////////////
 
 //球と球の衝突判定
-bool IsCollision(const Sphere& s1, const Sphere& s2);
+bool IsCollisionSS(const Sphere& s1, const Sphere& s2);
+
+//球と平面の衝突判定
+bool IsCollisionSP(const Sphere& sphere, const Plane& plane);
+
+/////////////////////
+///  Acquisition  ///
+/////////////////////
+
+//垂直ベクトル取得
+Vector3 Perpendicular(const Vector3& vector);
 
 ///////////////
 ///  Print  ///
