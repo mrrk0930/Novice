@@ -2,6 +2,10 @@
 #include <Novice.h>
 #include <cstdint>
 
+// 文字の幅高さ
+const int kRowHeight = 20;
+const int kColumnWidth = 60;
+
 struct Vector3 
 {
 
@@ -17,10 +21,6 @@ struct Matrix4x4
 	float m[4][4];
 
 };
-
-//文字の幅高さ
-const int kRowHeight = 20;
-const int kColumnWidth = 60;
 
 struct Sphere 
 {
@@ -158,6 +158,10 @@ void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const 
 //線分
 void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
+//三角形
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -173,6 +177,9 @@ void UpdatePlaneImGui(Sphere& sphere, Plane& plane);
 
 //線分ImGui
 void UpdateSegmentImGui(Segment& segment, Plane& plane);
+
+//三角形ImGui
+void UpdateTriangleImGui(Segment& segment, Triangle& triangle);
 
 ////////////////////////
 ///  GeometryUtility ///
@@ -201,8 +208,12 @@ bool IsCollisionSS(const Sphere& s1, const Sphere& s2);
 //球と平面の衝突判定
 bool IsCollisionSP(const Sphere& sphere, const Plane& plane);
 
-//平面と線分
+//平面と線分の衝突判定
 bool IsCollisionPL(const Segment& segment, const Plane& plane);
+
+//三角形と線分の衝突判定
+bool IsCollisionLT(const Triangle& triangle, const Segment& segment);
+
 
 /////////////////////
 ///  Acquisition  ///

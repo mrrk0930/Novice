@@ -618,6 +618,22 @@ void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, 
 
 }
 
+// 三角形
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+
+	Vector3 screen[3];
+
+	for (int i = 0; i < 3; i++) {
+		screen[i] = Transform(Transform(triangle.vertices[i], viewProjectionMatrix), viewportMatrix);
+	}
+
+	Novice::DrawLine((int)screen[0].x, (int)screen[0].y, (int)screen[1].x, (int)screen[1].y, color);
+
+	Novice::DrawLine((int)screen[1].x, (int)screen[1].y, (int)screen[2].x, (int)screen[2].y, color);
+
+	Novice::DrawLine((int)screen[2].x, (int)screen[2].y, (int)screen[0].x, (int)screen[0].y, color);
+}
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -695,6 +711,26 @@ void UpdateSegmentImGui(Segment& segment, Plane& plane)
 
 	ImGui::End();
 
+}
+
+// 三角形ImGui
+void UpdateTriangleImGui(Segment& segment, Triangle& triangle) {
+
+	ImGui::Begin("Collision");
+
+	ImGui::DragFloat3("SegmentOrigin", &segment.origin.x, 0.01f);
+
+	ImGui::DragFloat3("SegmentDiff", &segment.diff.x, 0.01f);
+
+	ImGui::Separator();
+
+	ImGui::DragFloat3("Vertex0", &triangle.vertices[0].x, 0.01f);
+
+	ImGui::DragFloat3("Vertex1", &triangle.vertices[1].x, 0.01f);
+
+	ImGui::DragFloat3("Vertex2", &triangle.vertices[2].x, 0.01f);
+
+	ImGui::End();
 }
 
 ////////////////////////
@@ -811,7 +847,7 @@ bool IsCollisionSP(const Sphere& sphere, const Plane& plane)
 
 }
 
-// 平面と線分
+// 平面と線分の衝突判定
 bool IsCollisionPL(const Segment& segment, const Plane& plane) 
 {
 
@@ -829,6 +865,47 @@ bool IsCollisionPL(const Segment& segment, const Plane& plane)
 
 	return (t >= 0.0f && t <= 1.0f);
 
+}
+
+// 三角形と線分の衝突判定
+bool IsCollisionLT(const Triangle& triangle, const Segment& segment) {
+
+	Vector3 v0 = triangle.vertices[0];
+	Vector3 v1 = triangle.vertices[1];
+	Vector3 v2 = triangle.vertices[2];
+
+	Vector3 edge01 = Subtract(v1, v0);
+	Vector3 edge12 = Subtract(v2, v1);
+
+	Vector3 normal = Normalize(Cross(edge01, edge12));
+
+	float denominator = Dot(segment.diff, normal);
+
+	if (fabsf(denominator) < 0.00001f) {
+		return false;
+	}
+
+	float t = (Dot(v0, normal) - Dot(segment.origin, normal)) / denominator;
+
+	if (t < 0.0f || t > 1.0f) {
+		return false;
+	}
+
+	Vector3 p = Add(segment.origin, Multiply(t, segment.diff));
+
+	Vector3 edge0 = Subtract(v1, v0);
+	Vector3 edge1 = Subtract(v2, v1);
+	Vector3 edge2 = Subtract(v0, v2);
+
+	Vector3 vp0 = Subtract(p, v0);
+	Vector3 vp1 = Subtract(p, v1);
+	Vector3 vp2 = Subtract(p, v2);
+
+	Vector3 c0 = Cross(edge0, vp0);
+	Vector3 c1 = Cross(edge1, vp1);
+	Vector3 c2 = Cross(edge2, vp2);
+
+	return Dot(c0, normal) >= 0.0f && Dot(c1, normal) >= 0.0f && Dot(c2, normal) >= 0.0f;
 }
 
 /////////////////////
