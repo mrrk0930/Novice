@@ -46,6 +46,12 @@ struct Plane
 
 };
 
+struct Triangle 
+{
+
+	Vector3 vertices[3];
+
+};
 
 ////////////////
 ///  Vector  ///
