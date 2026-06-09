@@ -2,7 +2,7 @@
 #include <cmath>
 #include <imgui.h>
 #include <numbers>
-
+#include <algorithm>
 
 ////////////////
 ///  Vector  ///
@@ -619,12 +619,16 @@ void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, 
 }
 
 // 三角形
-void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) 
+{
 
 	Vector3 screen[3];
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++) 
+	{
+	
 		screen[i] = Transform(Transform(triangle.vertices[i], viewProjectionMatrix), viewportMatrix);
+	
 	}
 
 	Novice::DrawLine((int)screen[0].x, (int)screen[0].y, (int)screen[1].x, (int)screen[1].y, color);
@@ -632,12 +636,17 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 	Novice::DrawLine((int)screen[1].x, (int)screen[1].y, (int)screen[2].x, (int)screen[2].y, color);
 
 	Novice::DrawLine((int)screen[2].x, (int)screen[2].y, (int)screen[0].x, (int)screen[0].y, color);
+
 }
 
 // AABB
-void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
-	Vector3 vertices[8] = {
-	    {aabb.min.x, aabb.min.y, aabb.min.z},
+void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) 
+{
+
+	Vector3 vertices[8] = 
+	{
+	
+		{aabb.min.x, aabb.min.y, aabb.min.z},
         {aabb.max.x, aabb.min.y, aabb.min.z},
         {aabb.max.x, aabb.max.y, aabb.min.z},
         {aabb.min.x, aabb.max.y, aabb.min.z},
@@ -646,12 +655,16 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
         {aabb.max.x, aabb.min.y, aabb.max.z},
         {aabb.max.x, aabb.max.y, aabb.max.z},
         {aabb.min.x, aabb.max.y, aabb.max.z},
+	
 	};
 
 	Vector3 screen[8];
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++) 
+	{
+	
 		screen[i] = Transform(Transform(vertices[i], viewProjectionMatrix), viewportMatrix);
+	
 	}
 
 	// 前面
@@ -671,6 +684,7 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
 	Novice::DrawLine((int)screen[1].x, (int)screen[1].y, (int)screen[5].x, (int)screen[5].y, color);
 	Novice::DrawLine((int)screen[2].x, (int)screen[2].y, (int)screen[6].x, (int)screen[6].y, color);
 	Novice::DrawLine((int)screen[3].x, (int)screen[3].y, (int)screen[7].x, (int)screen[7].y, color);
+
 }
 
 /////////////////
@@ -753,7 +767,8 @@ void UpdateSegmentImGui(Segment& segment, Plane& plane)
 }
 
 // 三角形ImGui
-void UpdateTriangleImGui(Segment& segment, Triangle& triangle) {
+void UpdateTriangleImGui(Segment& segment, Triangle& triangle) 
+{
 
 	ImGui::Begin("Collision");
 
@@ -770,10 +785,13 @@ void UpdateTriangleImGui(Segment& segment, Triangle& triangle) {
 	ImGui::DragFloat3("Vertex2", &triangle.vertices[2].x, 0.01f);
 
 	ImGui::End();
+
 }
 
 // AABBImGui
-void UpdateAABBImGui(AABB& aabb1, AABB& aabb2) {
+void UpdateAABBImGui(AABB& aabb1, AABB& aabb2) 
+{
+
 	ImGui::Begin("AABB Collision");
 
 	ImGui::Text("AABB1");
@@ -789,6 +807,31 @@ void UpdateAABBImGui(AABB& aabb1, AABB& aabb2) {
 	ImGui::DragFloat3("Max2", &aabb2.max.x, 0.01f);
 
 	ImGui::End();
+
+}
+
+// Sphere,AABBImGui
+void UpdateAABBSphereImGui(AABB& aabb, Sphere& sphere) 
+{
+
+	ImGui::Begin("AABB & Sphere");
+
+	ImGui::Text("AABB");
+
+	ImGui::DragFloat3("AABB Min", &aabb.min.x, 0.01f);
+
+	ImGui::DragFloat3("AABB Max", &aabb.max.x, 0.01f);
+
+	ImGui::Separator();
+
+	ImGui::Text("Sphere");
+
+	ImGui::DragFloat3("Sphere Center", &sphere.center.x, 0.01f);
+
+	ImGui::DragFloat("Sphere Radius", &sphere.radius, 0.01f, 0.01f, 10.0f);
+
+	ImGui::End();
+
 }
 
 ////////////////////////
@@ -809,11 +852,16 @@ Vector3 Project(const Vector3& v1, const Vector3& v2) {
 }
 
 // 最近接点
-Vector3 ClosestPoint(const Vector3& point, const Segment& segment) {
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment) 
+{
+
 	float lengthSq = Dot(segment.diff, segment.diff);
 
-	if (lengthSq == 0.0f) {
+	if (lengthSq == 0.0f) 
+	{
+	
 		return segment.origin;
+	
 	}
 
 	Vector3 pointVector = Subtract(point, segment.origin);
@@ -821,15 +869,22 @@ Vector3 ClosestPoint(const Vector3& point, const Segment& segment) {
 	float t = Dot(pointVector, segment.diff) / lengthSq;
 
 	// 線分内に制限
-	if (t < 0.0f) {
+	if (t < 0.0f) 
+	{
+	
 		t = 0.0f;
+	
 	}
 
-	if (t > 1.0f) {
+	if (t > 1.0f) 
+	{
+	
 		t = 1.0f;
+	
 	}
 
 	return Add(segment.origin, Multiply(t, segment.diff));
+
 }
 
 ///////////////
@@ -926,7 +981,8 @@ bool IsCollisionPL(const Segment& segment, const Plane& plane)
 }
 
 // 三角形と線分の衝突判定
-bool IsCollisionLT(const Triangle& triangle, const Segment& segment) {
+bool IsCollisionLT(const Triangle& triangle, const Segment& segment) 
+{
 
 	Vector3 v0 = triangle.vertices[0];
 	Vector3 v1 = triangle.vertices[1];
@@ -939,14 +995,20 @@ bool IsCollisionLT(const Triangle& triangle, const Segment& segment) {
 
 	float denominator = Dot(segment.diff, normal);
 
-	if (fabsf(denominator) < 0.00001f) {
+	if (fabsf(denominator) < 0.00001f) 
+	{
+	
 		return false;
+	
 	}
 
 	float t = (Dot(v0, normal) - Dot(segment.origin, normal)) / denominator;
 
-	if (t < 0.0f || t > 1.0f) {
+	if (t < 0.0f || t > 1.0f) 
+	{
+
 		return false;
+	
 	}
 
 	Vector3 p = Add(segment.origin, Multiply(t, segment.diff));
@@ -964,24 +1026,56 @@ bool IsCollisionLT(const Triangle& triangle, const Segment& segment) {
 	Vector3 c2 = Cross(edge2, vp2);
 
 	return Dot(c0, normal) >= 0.0f && Dot(c1, normal) >= 0.0f && Dot(c2, normal) >= 0.0f;
+
 }
 
 // AABB衝突判定
 bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2) 
 {
-	if (aabb1.max.x < aabb2.min.x || aabb1.min.x > aabb2.max.x) {
+
+	if (aabb1.max.x < aabb2.min.x || aabb1.min.x > aabb2.max.x) 
+	{
+	
 		return false;
+	
 	}
 
-	if (aabb1.max.y < aabb2.min.y || aabb1.min.y > aabb2.max.y) {
+	if (aabb1.max.y < aabb2.min.y || aabb1.min.y > aabb2.max.y) 
+	{
+	
 		return false;
+	
 	}
 
-	if (aabb1.max.z < aabb2.min.z || aabb1.min.z > aabb2.max.z) {
+	if (aabb1.max.z < aabb2.min.z || aabb1.min.z > aabb2.max.z) 
+	{
+	
 		return false;
+	
 	}
 
 	return true;
+
+}
+
+// AABBと球の衝突判定
+bool IsCollisionABS(const AABB& aabb, const Sphere& sphere) 
+{
+
+	Vector3 closestPoint;
+
+	closestPoint.x = std::clamp(sphere.center.x, aabb.min.x, aabb.max.x);
+
+	closestPoint.y = std::clamp(sphere.center.y, aabb.min.y, aabb.max.y);
+
+	closestPoint.z = std::clamp(sphere.center.z, aabb.min.z, aabb.max.z);
+
+	Vector3 diff = Subtract(closestPoint, sphere.center);
+
+	float distance = Length(diff);
+
+	return distance <= sphere.radius;
+
 }
 
 /////////////////////

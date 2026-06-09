@@ -194,6 +194,9 @@ void UpdateTriangleImGui(Segment& segment, Triangle& triangle);
 //AABBImGui
 void UpdateAABBImGui(AABB& aabb1, AABB& aabb2);
 
+//Sphere,AABBImGui
+void UpdateAABBSphereImGui(AABB& aabb, Sphere& sphere);
+
 ////////////////////////
 ///  GeometryUtility ///
 ////////////////////////
@@ -229,6 +232,9 @@ bool IsCollisionLT(const Triangle& triangle, const Segment& segment);
 
 //AABB衝突判定
 bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2);
+
+//AABBと球の衝突判定
+bool IsCollisionABS(const AABB& aabb, const Sphere& sphere);
 
 /////////////////////
 ///  Acquisition  ///

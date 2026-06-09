@@ -2,7 +2,7 @@
 #include <Novice.h>
 #include <cmath>
 #include <imgui.h>
-
+#include <algorithm>
 
 const char kWindowTitle[] = "GC2B_05_ムロサキ_リク_タイトル";
 
@@ -24,14 +24,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	Vector3 cameraRotate{0.26f, 0.0f, 0.0f};
 
-	AABB aabb1{
-	    .min{-0.5f, -0.5f, -0.5f},
-	    .max{0.0f,  0.0f,  0.0f },
+	AABB aabb
+	{
+	 
+		.min{-0.5f, -0.5f, -0.5f},
+	    .max{0.5f,  0.5f,  0.5f },
+	
 	};
 
-	AABB aabb2{
-	    .min{0.2f, 0.2f, 0.2f},
-	    .max{1.0f, 1.0f, 1.0f},
+	Sphere sphere
+	{
+	
+		.center{1.0f, 0.0f, 0.0f},
+        .radius = 0.5f
+    
 	};
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -51,24 +57,32 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, kWindowWidth, kWindowHeight, 0.0f, 1.0f);
 
-		UpdateAABBImGui(aabb1, aabb2);
+		UpdateAABBSphereImGui(aabb, sphere);
 
-		// min,maxの補正
-		if (aabb1.min.x > aabb1.max.x)
-			std::swap(aabb1.min.x, aabb1.max.x);
-		if (aabb1.min.y > aabb1.max.y)
-			std::swap(aabb1.min.y, aabb1.max.y);
-		if (aabb1.min.z > aabb1.max.z)
-			std::swap(aabb1.min.z, aabb1.max.z);
+		// min max補正
+		if (aabb.min.x > aabb.max.x) 
+		{
+		
+			std::swap(aabb.min.x, aabb.max.x);
+		
+		}
 
-		if (aabb2.min.x > aabb2.max.x)
-			std::swap(aabb2.min.x, aabb2.max.x);
-		if (aabb2.min.y > aabb2.max.y)
-			std::swap(aabb2.min.y, aabb2.max.y);
-		if (aabb2.min.z > aabb2.max.z)
-			std::swap(aabb2.min.z, aabb2.max.z);
+		if (aabb.min.y > aabb.max.y) 
+		{
+		
+			std::swap(aabb.min.y, aabb.max.y);
+		
+		}
 
-		bool isHit = IsCollisionAABB(aabb1, aabb2);
+		if (aabb.min.z > aabb.max.z) 
+		{
+		
+			std::swap(aabb.min.z, aabb.max.z);
+		
+		}
+
+		bool isHit = IsCollisionABS(aabb, sphere);
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -79,9 +93,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		DrawAABB(aabb1, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
+		DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
 
-		DrawAABB(aabb2, viewProjectionMatrix, viewportMatrix, WHITE);
+		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
 
 		///
 		/// ↑描画処理ここまで
