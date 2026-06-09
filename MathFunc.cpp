@@ -634,6 +634,45 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 	Novice::DrawLine((int)screen[2].x, (int)screen[2].y, (int)screen[0].x, (int)screen[0].y, color);
 }
 
+// AABB
+void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+	Vector3 vertices[8] = {
+	    {aabb.min.x, aabb.min.y, aabb.min.z},
+        {aabb.max.x, aabb.min.y, aabb.min.z},
+        {aabb.max.x, aabb.max.y, aabb.min.z},
+        {aabb.min.x, aabb.max.y, aabb.min.z},
+
+	    {aabb.min.x, aabb.min.y, aabb.max.z},
+        {aabb.max.x, aabb.min.y, aabb.max.z},
+        {aabb.max.x, aabb.max.y, aabb.max.z},
+        {aabb.min.x, aabb.max.y, aabb.max.z},
+	};
+
+	Vector3 screen[8];
+
+	for (int i = 0; i < 8; i++) {
+		screen[i] = Transform(Transform(vertices[i], viewProjectionMatrix), viewportMatrix);
+	}
+
+	// 前面
+	Novice::DrawLine((int)screen[0].x, (int)screen[0].y, (int)screen[1].x, (int)screen[1].y, color);
+	Novice::DrawLine((int)screen[1].x, (int)screen[1].y, (int)screen[2].x, (int)screen[2].y, color);
+	Novice::DrawLine((int)screen[2].x, (int)screen[2].y, (int)screen[3].x, (int)screen[3].y, color);
+	Novice::DrawLine((int)screen[3].x, (int)screen[3].y, (int)screen[0].x, (int)screen[0].y, color);
+
+	// 背面
+	Novice::DrawLine((int)screen[4].x, (int)screen[4].y, (int)screen[5].x, (int)screen[5].y, color);
+	Novice::DrawLine((int)screen[5].x, (int)screen[5].y, (int)screen[6].x, (int)screen[6].y, color);
+	Novice::DrawLine((int)screen[6].x, (int)screen[6].y, (int)screen[7].x, (int)screen[7].y, color);
+	Novice::DrawLine((int)screen[7].x, (int)screen[7].y, (int)screen[4].x, (int)screen[4].y, color);
+
+	// 接続
+	Novice::DrawLine((int)screen[0].x, (int)screen[0].y, (int)screen[4].x, (int)screen[4].y, color);
+	Novice::DrawLine((int)screen[1].x, (int)screen[1].y, (int)screen[5].x, (int)screen[5].y, color);
+	Novice::DrawLine((int)screen[2].x, (int)screen[2].y, (int)screen[6].x, (int)screen[6].y, color);
+	Novice::DrawLine((int)screen[3].x, (int)screen[3].y, (int)screen[7].x, (int)screen[7].y, color);
+}
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -729,6 +768,25 @@ void UpdateTriangleImGui(Segment& segment, Triangle& triangle) {
 	ImGui::DragFloat3("Vertex1", &triangle.vertices[1].x, 0.01f);
 
 	ImGui::DragFloat3("Vertex2", &triangle.vertices[2].x, 0.01f);
+
+	ImGui::End();
+}
+
+// AABBImGui
+void UpdateAABBImGui(AABB& aabb1, AABB& aabb2) {
+	ImGui::Begin("AABB Collision");
+
+	ImGui::Text("AABB1");
+
+	ImGui::DragFloat3("Min1", &aabb1.min.x, 0.01f);
+	ImGui::DragFloat3("Max1", &aabb1.max.x, 0.01f);
+
+	ImGui::Separator();
+
+	ImGui::Text("AABB2");
+
+	ImGui::DragFloat3("Min2", &aabb2.min.x, 0.01f);
+	ImGui::DragFloat3("Max2", &aabb2.max.x, 0.01f);
 
 	ImGui::End();
 }
@@ -906,6 +964,24 @@ bool IsCollisionLT(const Triangle& triangle, const Segment& segment) {
 	Vector3 c2 = Cross(edge2, vp2);
 
 	return Dot(c0, normal) >= 0.0f && Dot(c1, normal) >= 0.0f && Dot(c2, normal) >= 0.0f;
+}
+
+// AABB衝突判定
+bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2) 
+{
+	if (aabb1.max.x < aabb2.min.x || aabb1.min.x > aabb2.max.x) {
+		return false;
+	}
+
+	if (aabb1.max.y < aabb2.min.y || aabb1.min.y > aabb2.max.y) {
+		return false;
+	}
+
+	if (aabb1.max.z < aabb2.min.z || aabb1.min.z > aabb2.max.z) {
+		return false;
+	}
+
+	return true;
 }
 
 /////////////////////
