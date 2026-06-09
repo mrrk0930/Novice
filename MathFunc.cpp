@@ -810,7 +810,7 @@ void UpdateAABBImGui(AABB& aabb1, AABB& aabb2)
 
 }
 
-// Sphere,AABBImGui
+// 球とAABBImGui
 void UpdateAABBSphereImGui(AABB& aabb, Sphere& sphere) 
 {
 
@@ -829,6 +829,28 @@ void UpdateAABBSphereImGui(AABB& aabb, Sphere& sphere)
 	ImGui::DragFloat3("Sphere Center", &sphere.center.x, 0.01f);
 
 	ImGui::DragFloat("Sphere Radius", &sphere.radius, 0.01f, 0.01f, 10.0f);
+
+	ImGui::End();
+
+}
+
+// 線分とAABBImGui
+void UpdateAABBLineImGui(AABB& aabb, Segment& segment) 
+{
+
+	ImGui::Begin("AABB & Segment");
+
+	ImGui::Text("AABB");
+
+	ImGui::DragFloat3("Min", &aabb.min.x, 0.01f);
+	ImGui::DragFloat3("Max", &aabb.max.x, 0.01f);
+
+	ImGui::Separator();
+
+	ImGui::Text("Segment");
+
+	ImGui::DragFloat3("Origin", &segment.origin.x, 0.01f);
+	ImGui::DragFloat3("Diff", &segment.diff.x, 0.01f);
 
 	ImGui::End();
 
@@ -1075,6 +1097,123 @@ bool IsCollisionABS(const AABB& aabb, const Sphere& sphere)
 	float distance = Length(diff);
 
 	return distance <= sphere.radius;
+
+}
+
+// AABBと線分の衝突判定
+bool IsCollisionAABBSegment(const AABB& aabb, const Segment& segment) 
+{
+
+	float tMin = 0.0f;
+	float tMax = 1.0f;
+
+	// X軸
+	if (segment.diff.x != 0.0f) 
+	{
+	
+		float tx1 = (aabb.min.x - segment.origin.x) / segment.diff.x;
+		float tx2 = (aabb.max.x - segment.origin.x) / segment.diff.x;
+
+		tMin = (std::max)(tMin, (std::min)(tx1, tx2));
+		tMax = (std::min)(tMax, (std::max)(tx1, tx2));
+	
+	} else if (segment.origin.x < aabb.min.x || segment.origin.x > aabb.max.x) {
+	
+		return false;
+	
+	}
+
+	// Y軸
+	if (segment.diff.y != 0.0f) 
+	{
+	
+		float ty1 = (aabb.min.y - segment.origin.y) / segment.diff.y;
+		float ty2 = (aabb.max.y - segment.origin.y) / segment.diff.y;
+
+		tMin = (std::max)(tMin, (std::min)(ty1, ty2));
+		tMax = (std::min)(tMax, (std::max)(ty1, ty2));
+	
+	} else if (segment.origin.y < aabb.min.y || segment.origin.y > aabb.max.y) {
+	
+		return false;
+	
+	}
+
+	// Z軸
+	if (segment.diff.z != 0.0f) 
+	{
+	
+		float tz1 = (aabb.min.z - segment.origin.z) / segment.diff.z;
+		float tz2 = (aabb.max.z - segment.origin.z) / segment.diff.z;
+
+		tMin = (std::max)(tMin, (std::min)(tz1, tz2));
+		tMax = (std::min)(tMax, (std::max)(tz1, tz2));
+	
+	} else if (segment.origin.z < aabb.min.z || segment.origin.z > aabb.max.z) {
+	
+		return false;
+	
+	}
+
+	return tMin <= tMax;
+
+}
+
+// AABBと半直線の衝突判定
+bool IsCollisionAABBRay(const AABB& aabb, const Ray& ray) 
+{
+
+	float tMin = 0.0f;
+	float tMax = FLT_MAX;
+
+	float tx1 = (aabb.min.x - ray.origin.x) / ray.diff.x;
+	float tx2 = (aabb.max.x - ray.origin.x) / ray.diff.x;
+
+	tMin = (std::max)(tMin, (std::min)(tx1, tx2));
+	tMax = (std::min)(tMax, (std::max)(tx1, tx2));
+
+	float ty1 = (aabb.min.y - ray.origin.y) / ray.diff.y;
+	float ty2 = (aabb.max.y - ray.origin.y) / ray.diff.y;
+
+	tMin = (std::max)(tMin, (std::min)(ty1, ty2));
+	tMax = (std::min)(tMax, (std::max)(ty1, ty2));
+
+	float tz1 = (aabb.min.z - ray.origin.z) / ray.diff.z;
+	float tz2 = (aabb.max.z - ray.origin.z) / ray.diff.z;
+
+	tMin = (std::max)(tMin, (std::min)(tz1, tz2));
+	tMax = (std::min)(tMax, (std::max)(tz1, tz2));
+
+	return tMin <= tMax;
+
+}
+
+// AABBと直線の衝突判定
+bool IsCollisionAABBLine(const AABB& aabb, const Line& line) 
+{
+
+	float tMin = -FLT_MAX;
+	float tMax = FLT_MAX;
+
+	float tx1 = (aabb.min.x - line.origin.x) / line.diff.x;
+	float tx2 = (aabb.max.x - line.origin.x) / line.diff.x;
+
+	tMin = (std::max)(tMin, (std::min)(tx1, tx2));
+	tMax = (std::min)(tMax, (std::max)(tx1, tx2));
+
+	float ty1 = (aabb.min.y - line.origin.y) / line.diff.y;
+	float ty2 = (aabb.max.y - line.origin.y) / line.diff.y;
+
+	tMin = (std::max)(tMin, (std::min)(ty1, ty2));
+	tMax = (std::min)(tMax, (std::max)(ty1, ty2));
+
+	float tz1 = (aabb.min.z - line.origin.z) / line.diff.z;
+	float tz2 = (aabb.max.z - line.origin.z) / line.diff.z;
+
+	tMin = (std::max)(tMin, (std::min)(tz1, tz2));
+	tMax = (std::min)(tMax, (std::max)(tz1, tz2));
+
+	return tMin <= tMax;
 
 }
 

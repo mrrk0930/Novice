@@ -26,17 +26,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	AABB aabb
 	{
-	 
-		.min{-0.5f, -0.5f, -0.5f},
-	    .max{0.5f,  0.5f,  0.5f },
 	
+		.min{-0.5f, -0.5f, -0.5f},
+        .max{0.5f,  0.5f,  0.5f },
+    
 	};
 
-	Sphere sphere
+	Segment segment
 	{
 	
-		.center{1.0f, 0.0f, 0.0f},
-        .radius = 0.5f
+		.origin{-0.7f, 0.3f, 0.0f},
+        .diff{2.0f,  -0.5f, 0.0f}
     
 	};
 
@@ -57,31 +57,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, kWindowWidth, kWindowHeight, 0.0f, 1.0f);
 
-		UpdateAABBSphereImGui(aabb, sphere);
+		UpdateAABBLineImGui(aabb, segment);
 
-		// min max補正
-		if (aabb.min.x > aabb.max.x) 
-		{
-		
-			std::swap(aabb.min.x, aabb.max.x);
-		
-		}
-
-		if (aabb.min.y > aabb.max.y) 
-		{
-		
-			std::swap(aabb.min.y, aabb.max.y);
-		
-		}
-
-		if (aabb.min.z > aabb.max.z) 
-		{
-		
-			std::swap(aabb.min.z, aabb.max.z);
-		
-		}
-
-		bool isHit = IsCollisionABS(aabb, sphere);
+		bool isHit = IsCollisionAABBSegment(aabb, segment);
 
 		///
 		/// ↑更新処理ここまで
@@ -95,7 +73,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
 
-		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
+		DrawSegment(segment, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
 
 		///
 		/// ↑描画処理ここまで

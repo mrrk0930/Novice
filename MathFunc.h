@@ -61,6 +61,22 @@ struct AABB
 
 };
 
+struct Ray 
+{
+
+	Vector3 origin;
+	Vector3 diff;
+
+};
+
+struct Line 
+{
+
+	Vector3 origin;
+	Vector3 diff;
+
+};
+
 ////////////////
 ///  Vector  ///
 ////////////////
@@ -194,8 +210,11 @@ void UpdateTriangleImGui(Segment& segment, Triangle& triangle);
 //AABBImGui
 void UpdateAABBImGui(AABB& aabb1, AABB& aabb2);
 
-//Sphere,AABBImGui
+//球とAABBImGui
 void UpdateAABBSphereImGui(AABB& aabb, Sphere& sphere);
+
+//線分とAABBImGui
+void UpdateAABBLineImGui(AABB& aabb, Segment& segment);
 
 ////////////////////////
 ///  GeometryUtility ///
@@ -235,6 +254,15 @@ bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2);
 
 //AABBと球の衝突判定
 bool IsCollisionABS(const AABB& aabb, const Sphere& sphere);
+
+//AABBと線分の衝突判定
+bool IsCollisionAABBSegment(const AABB& aabb, const Segment& segment);
+
+//AABBと半直線の衝突判定
+bool IsCollisionAABBRay(const AABB& aabb, const Ray& ray);
+
+//AABBと直線の衝突判定
+bool IsCollisionAABBLine(const AABB& aabb, const Line& line);
 
 /////////////////////
 ///  Acquisition  ///
