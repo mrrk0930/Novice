@@ -13,18 +13,7 @@ struct Vector3
 	float y;
 	float z;
 
-	//二項演算子+-
-	Vector3 operator+(const Vector3& v) const;
-	Vector3 operator-(const Vector3& v) const;
-
-	//単項演算子
-	Vector3 operator-() const;
-
-	//スカラー倍
-	Vector3 operator*(float scalar) const;
-
-	//複合代入演算子
-	Vector3& operator+=(const Vector3& v);
+	
 
 };
 
@@ -37,7 +26,28 @@ struct Matrix4x4
 
 };
 
-// Matrix4x4 演算子オーバーロード
+//====================
+// Vector3 演算子
+//====================
+
+// 二項演算子
+Vector3 operator+(const Vector3& v1, const Vector3& v2);
+Vector3 operator-(const Vector3& v1, const Vector3& v2);
+
+// 単項演算子
+Vector3 operator-(const Vector3& v);
+
+// 複合代入
+Vector3& operator+=(Vector3& v1, const Vector3& v2);
+
+// スカラー倍
+Vector3 operator*(const Vector3& v, float scalar);
+Vector3 operator*(float scalar, const Vector3& v);
+
+//====================
+// Matrix4x4 演算子
+//====================
+
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2);
 Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2);
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);

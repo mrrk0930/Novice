@@ -98,29 +98,26 @@ Vector3 Normalize(const Vector3& v)
 
 }
 
-// 二項演算子+
-Vector3 Vector3::operator+(const Vector3& v) const { return {x + v.x, y + v.y, z + v.z}; }
+// 加算
+Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Add(v1, v2); }
 
-// 二項演算子-
-Vector3 Vector3::operator-(const Vector3& v) const { return {x - v.x, y - v.y, z - v.z}; }
+// 減算
+Vector3 operator-(const Vector3& v1, const Vector3& v2) { return Subtract(v1, v2); }
 
-// 単項演算子
-Vector3 Vector3::operator-() const { return {-x, -y, -z}; }
+// 単項-
+Vector3 operator-(const Vector3& v) { return {-v.x, -v.y, -v.z}; }
 
-// 複合代入演算子
-Vector3& Vector3::operator+=(const Vector3& v) 
-{
-
-	x += v.x;
-	y += v.y;
-	z += v.z;
-
-	return *this;
-
+// +=
+Vector3& operator+=(Vector3& v1, const Vector3& v2) {
+	v1 = Add(v1, v2);
+	return v1;
 }
 
-// スカラー倍
-Vector3 Vector3::operator*(float scalar) const { return {x * scalar, y * scalar, z * scalar}; }
+// Vector3 * float
+Vector3 operator*(const Vector3& v, float scalar) { return Multiply(scalar, v); }
+
+// float * Vector3
+Vector3 operator*(float scalar, const Vector3& v) { return Multiply(scalar, v); }
 
 ////////////////
 ///  Matrix  ///
