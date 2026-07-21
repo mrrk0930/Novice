@@ -38,9 +38,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Matrix4x4 m1 = MakeIdentity4x4();
 	Matrix4x4 m2 = MakeIdentity4x4();
 
-	Matrix4x4 addMatrix;
-	Matrix4x4 subMatrix;
-	Matrix4x4 mulMatrix;
+	Matrix4x4 addMatrix = m1 + m2;
+	Matrix4x4 subMatrix = m1 - m2;
+	Matrix4x4 mulMatrix = m1 * m2;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {

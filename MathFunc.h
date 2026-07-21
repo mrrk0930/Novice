@@ -33,13 +33,9 @@ struct Matrix4x4
 
 	float m[4][4];
 
-	 //加算
+	 // 演算子オーバーロード
 	Matrix4x4 operator+(const Matrix4x4& other) const;
-
-	//減算
 	Matrix4x4 operator-(const Matrix4x4& other) const;
-
-	//積
 	Matrix4x4 operator*(const Matrix4x4& other) const;
 
 };

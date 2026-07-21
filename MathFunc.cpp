@@ -288,70 +288,14 @@ Matrix4x4 Transpose(const Matrix4x4& m)
 
 }
 
-// 加算演算子
-Matrix4x4 Matrix4x4::operator+(const Matrix4x4& other) const 
-{
+// 加算
+Matrix4x4 Matrix4x4::operator+(const Matrix4x4& other) const { return Add(*this, other); }
 
-	Matrix4x4 result{};
+// 減算
+Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const { return Subtract(*this, other); }
 
-	for (int y = 0; y < 4; y++) 
-	{
-	
-		for (int x = 0; x < 4; x++) 
-		{
-		
-			result.m[y][x] = m[y][x] + other.m[y][x];
-		
-		}
-	
-	}
-
-	return result;
-
-}
-
-// 減算演算子
-Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const 
-{
-
-	Matrix4x4 result{};
-
-	for (int y = 0; y < 4; y++) 
-	{
-		for (int x = 0; x < 4; x++) 
-		{
-		
-			result.m[y][x] = m[y][x] - other.m[y][x];
-		
-		}
-	
-	}
-
-	return result;
-
-}
-
-// 積演算子
-Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const 
-{
-
-	Matrix4x4 result{};
-
-	for (int row = 0; row < 4; row++) 
-	{
-
-		for (int column = 0; column < 4; column++) 
-		{
-
-			result.m[row][column] = m[row][0] * other.m[0][column] + m[row][1] * other.m[1][column] + m[row][2] * other.m[2][column] + m[row][3] * other.m[3][column];
-		
-		}
-	
-	}
-
-	return result;
-
-}
+// 積
+Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const { return Multiply(*this, other); }
 
 //////////////////
 ///  Rotation  ///
