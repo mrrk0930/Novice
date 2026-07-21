@@ -119,6 +119,9 @@ Vector3& Vector3::operator+=(const Vector3& v)
 
 }
 
+// スカラー倍
+Vector3 Vector3::operator*(float scalar) const { return {x * scalar, y * scalar, z * scalar}; }
+
 ////////////////
 ///  Matrix  ///
 ////////////////
@@ -276,6 +279,71 @@ Matrix4x4 Transpose(const Matrix4x4& m)
 		{
 			
 			result.m[y][x] = m.m[x][y];
+		
+		}
+	
+	}
+
+	return result;
+
+}
+
+// 加算演算子
+Matrix4x4 Matrix4x4::operator+(const Matrix4x4& other) const 
+{
+
+	Matrix4x4 result{};
+
+	for (int y = 0; y < 4; y++) 
+	{
+	
+		for (int x = 0; x < 4; x++) 
+		{
+		
+			result.m[y][x] = m[y][x] + other.m[y][x];
+		
+		}
+	
+	}
+
+	return result;
+
+}
+
+// 減算演算子
+Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const 
+{
+
+	Matrix4x4 result{};
+
+	for (int y = 0; y < 4; y++) 
+	{
+		for (int x = 0; x < 4; x++) 
+		{
+		
+			result.m[y][x] = m[y][x] - other.m[y][x];
+		
+		}
+	
+	}
+
+	return result;
+
+}
+
+// 積演算子
+Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const 
+{
+
+	Matrix4x4 result{};
+
+	for (int row = 0; row < 4; row++) 
+	{
+
+		for (int column = 0; column < 4; column++) 
+		{
+
+			result.m[row][column] = m[row][0] * other.m[0][column] + m[row][1] * other.m[1][column] + m[row][2] * other.m[2][column] + m[row][3] * other.m[3][column];
 		
 		}
 	
@@ -979,33 +1047,103 @@ void UpdateJointImGui(Joint joints[])
 }
 
 // 演算子ImGui
-void UpdateOperatorImGui(Vector3& v1, Vector3& v2, Vector3& addResult, Vector3& subResult, Vector3& minusResult, Vector3& addEqualResult) 
+void UpdateOperatorImGui(
+    Vector3& vector1, Vector3& vector2, float& scalar, Vector3& scalarResult, Vector3& addResult, Vector3& subResult, Vector3& minusResult, Vector3& addEqualResult,
+	Matrix4x4& m1, Matrix4x4& m2, Matrix4x4& addMatrix, Matrix4x4& subMatrix, Matrix4x4& mulMatrix) 
 {
 
 	ImGui::Begin("Operator Overload");
 
-	ImGui::DragFloat3("Vector1", &v1.x, 0.01f);
-	ImGui::DragFloat3("Vector2", &v2.x, 0.01f);
+	ImGui::Text("Vector");
+
+	ImGui::DragFloat3("Vector1", &vector1.x, 0.01f);
+	ImGui::DragFloat3("Vector2", &vector2.x, 0.01f);
+
+	ImGui::DragFloat("Scalar", &scalar, 0.01f);
 
 	ImGui::Separator();
 
-	ImGui::Text("Binary +");
-	ImGui::Text("(%.2f, %.2f, %.2f)", addResult.x, addResult.y, addResult.z);
+	ImGui::Text("Vector * Scalar");
+	ImGui::Text("(%.2f %.2f %.2f)", scalarResult.x, scalarResult.y, scalarResult.z);
 
 	ImGui::Separator();
 
-	ImGui::Text("Binary -");
-	ImGui::Text("(%.2f, %.2f, %.2f)", subResult.x, subResult.y, subResult.z);
+	ImGui::Text("Vector + Vector");
+	ImGui::Text("(%.2f %.2f %.2f)", addResult.x, addResult.y, addResult.z);
 
 	ImGui::Separator();
 
-	ImGui::Text("Unary -");
-	ImGui::Text("(%.2f, %.2f, %.2f)", minusResult.x, minusResult.y, minusResult.z);
+	ImGui::Text("Vector - Vector");
+	ImGui::Text("(%.2f %.2f %.2f)", subResult.x, subResult.y, subResult.z);
 
 	ImGui::Separator();
 
-	ImGui::Text("Compound +=");
-	ImGui::Text("(%.2f, %.2f, %.2f)", addEqualResult.x, addEqualResult.y, addEqualResult.z);
+	ImGui::Text("-Vector");
+	ImGui::Text("(%.2f %.2f %.2f)", minusResult.x, minusResult.y, minusResult.z);
+
+	ImGui::Separator();
+
+	ImGui::Text("Vector +=");
+	ImGui::Text("(%.2f %.2f %.2f)", addEqualResult.x, addEqualResult.y, addEqualResult.z);
+
+	ImGui::Separator();
+
+	ImGui::Text("Matrix");
+
+	if (ImGui::TreeNode("Matrix1")) 
+	{
+	
+		ImGui::DragFloat4("M1 Row0", m1.m[0], 0.01f);
+		ImGui::DragFloat4("M1 Row1", m1.m[1], 0.01f);
+		ImGui::DragFloat4("M1 Row2", m1.m[2], 0.01f);
+		ImGui::DragFloat4("M1 Row3", m1.m[3], 0.01f);
+		ImGui::TreePop();
+	
+	}
+
+	if (ImGui::TreeNode("Matrix2")) 
+	{
+	
+		ImGui::DragFloat4("M2 Row0", m2.m[0], 0.01f);
+		ImGui::DragFloat4("M2 Row1", m2.m[1], 0.01f);
+		ImGui::DragFloat4("M2 Row2", m2.m[2], 0.01f);
+		ImGui::DragFloat4("M2 Row3", m2.m[3], 0.01f);
+		ImGui::TreePop();
+	
+	}
+
+	ImGui::Separator();
+
+	ImGui::Text("Matrix + Matrix");
+
+	for (int y = 0; y < 4; y++) 
+	{
+	
+		ImGui::Text("%.2f %.2f %.2f %.2f", addMatrix.m[y][0], addMatrix.m[y][1], addMatrix.m[y][2], addMatrix.m[y][3]);
+	
+	}
+
+	ImGui::Separator();
+
+	ImGui::Text("Matrix - Matrix");
+
+	for (int y = 0; y < 4; y++) 
+	{
+	
+		ImGui::Text("%.2f %.2f %.2f %.2f", subMatrix.m[y][0], subMatrix.m[y][1], subMatrix.m[y][2], subMatrix.m[y][3]);
+	
+	}
+
+	ImGui::Separator();
+
+	ImGui::Text("Matrix * Matrix");
+
+	for (int y = 0; y < 4; y++) 
+	{
+	
+		ImGui::Text("%.2f %.2f %.2f %.2f", mulMatrix.m[y][0], mulMatrix.m[y][1], mulMatrix.m[y][2], mulMatrix.m[y][3]);
+	
+	}
 
 	ImGui::End();
 

@@ -20,6 +20,9 @@ struct Vector3
 	//単項演算子
 	Vector3 operator-() const;
 
+	//スカラー倍
+	Vector3 operator*(float scalar) const;
+
 	//複合代入演算子
 	Vector3& operator+=(const Vector3& v);
 
@@ -29,6 +32,15 @@ struct Matrix4x4
 {
 
 	float m[4][4];
+
+	 //加算
+	Matrix4x4 operator+(const Matrix4x4& other) const;
+
+	//減算
+	Matrix4x4 operator-(const Matrix4x4& other) const;
+
+	//積
+	Matrix4x4 operator*(const Matrix4x4& other) const;
 
 };
 
@@ -248,7 +260,9 @@ void UpdateBezierImGui(Vector3 controlPoints[3]);
 void UpdateJointImGui(Joint joints[]);
 
 //演算子ImGui
-void UpdateOperatorImGui(Vector3& v1, Vector3& v2, Vector3& addResult, Vector3& subResult, Vector3& minusResult, Vector3& addEqualResult);
+void UpdateOperatorImGui(
+    Vector3& vector1, Vector3& vector2, float& scalar, Vector3& scalarResult, Vector3& addResult, Vector3& subResult, Vector3& minusResult, Vector3& addEqualResult, Matrix4x4& m1, Matrix4x4& m2,
+    Matrix4x4& addMatrix, Matrix4x4& subMatrix, Matrix4x4& mulMatrix);
 
 ////////////////////////
 ///  GeometryUtility ///

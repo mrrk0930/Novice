@@ -27,10 +27,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Vector3 vector1 = {0.2f, 1.0f, 0.0f};
 	Vector3 vector2 = {2.4f, 3.1f, 1.2f};
 
+	float scalar = 2.5f;
+
+	Vector3 scalarResult;
 	Vector3 addResult;
 	Vector3 subResult;
 	Vector3 minusResult;
 	Vector3 addEqualResult;
+
+	Matrix4x4 m1 = MakeIdentity4x4();
+	Matrix4x4 m2 = MakeIdentity4x4();
+
+	Matrix4x4 addMatrix;
+	Matrix4x4 subMatrix;
+	Matrix4x4 mulMatrix;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -53,6 +63,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+		// スカラー倍
+		scalarResult = vector1 * scalar;
+
 		// 二項演算子
 		addResult = vector1 + vector2;
 		subResult = vector1 - vector2;
@@ -60,12 +73,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// 単項演算子
 		minusResult = -vector1;
 
-		// 複合代入演算子
+		// 複合代入
 		addEqualResult = vector1;
 		addEqualResult += vector2;
 
-		// ImGui表示
-		UpdateOperatorImGui(vector1, vector2, addResult, subResult, minusResult, addEqualResult);
+		// Matrix演算子
+		addMatrix = m1 + m2;
+		subMatrix = m1 - m2;
+		mulMatrix = m1 * m2;
+
+		// ImGui
+		UpdateOperatorImGui(vector1, vector2, scalar, scalarResult, addResult, subResult, minusResult, addEqualResult, m1, m2, addMatrix, subMatrix, mulMatrix);
 
 		///
 		/// ↑更新処理ここまで
