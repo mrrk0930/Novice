@@ -188,6 +188,10 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 //AABB
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
+//2次ベジェ曲線
+void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -215,6 +219,9 @@ void UpdateAABBSphereImGui(AABB& aabb, Sphere& sphere);
 
 //線分とAABBImGui
 void UpdateAABBLineImGui(AABB& aabb, Segment& segment);
+
+//ベジェ曲線ImGui
+void UpdateBezierImGui(Vector3 controlPoints[3]);
 
 ////////////////////////
 ///  GeometryUtility ///
@@ -270,6 +277,16 @@ bool IsCollisionAABBLine(const AABB& aabb, const Line& line);
 
 //垂直ベクトル取得
 Vector3 Perpendicular(const Vector3& vector);
+
+//////////////////////
+///  Bezier curve  ///
+//////////////////////
+
+//線形補間
+Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
+
+//2次ベジェ曲線上の点を求める
+Vector3 QuadraticBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, float t);
 
 ///////////////
 ///  Print  ///

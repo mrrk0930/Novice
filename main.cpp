@@ -24,21 +24,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	Vector3 cameraRotate{0.26f, 0.0f, 0.0f};
 
-	AABB aabb
-	{
-	
-		.min{-0.5f, -0.5f, -0.5f},
-        .max{0.5f,  0.5f,  0.5f },
-    
-	};
-
-	Segment segment
-	{
-	
-		.origin{-0.7f, 0.3f, 0.0f},
-        .diff{2.0f,  -0.5f, 0.0f}
-    
-	};
+	Vector3 controlPoints[3] = {
+	    {-0.8f, 0.58f, 1.0f},
+        {1.76f,  1.0f, -0.3f},
+        {0.94f,  -0.7f, 2.3f}
+    };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -53,13 +43,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓更新処理ここから
 		///
 
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		Matrix4x4 viewProjectionMatrix = MakeViewProjectionMatrix(cameraTranslate, cameraRotate, kWindowWidth, kWindowHeight);
 
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, kWindowWidth, kWindowHeight, 0.0f, 1.0f);
 
-		UpdateAABBLineImGui(aabb, segment);
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		bool isHit = IsCollisionAABBSegment(aabb, segment);
+		UpdateBezierImGui(controlPoints);
 
 		///
 		/// ↑更新処理ここまで
@@ -71,9 +63,21 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
 
-		DrawSegment(segment, viewProjectionMatrix, viewportMatrix, isHit ? RED : WHITE);
+		Sphere pointSphere;
+
+		pointSphere.radius = 0.01f;
+
+		pointSphere.center = controlPoints[0];
+		DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
+
+		pointSphere.center = controlPoints[1];
+		DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
+
+		pointSphere.center = controlPoints[2];
+		DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
+
+		DrawBezier(controlPoints[0], controlPoints[1], controlPoints[2], viewProjectionMatrix, viewportMatrix, BLUE);
 
 		///
 		/// ↑描画処理ここまで

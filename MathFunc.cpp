@@ -687,6 +687,33 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
 
 }
 
+// 2次ベジェ曲線
+void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) 
+{
+
+	const int kSubdivision = 100;
+
+	Vector3 prevPoint = p0;
+
+	for (int i = 1; i <= kSubdivision; i++) 
+	{
+
+		float t = float(i) / float(kSubdivision);
+
+		Vector3 currentPoint = QuadraticBezier(p0, p1, p2, t);
+
+		Vector3 screen0 = Transform(Transform(prevPoint, viewProjectionMatrix), viewportMatrix);
+
+		Vector3 screen1 = Transform(Transform(currentPoint, viewProjectionMatrix), viewportMatrix);
+
+		Novice::DrawLine(int(screen0.x), int(screen0.y), int(screen1.x), int(screen1.y), color);
+
+		prevPoint = currentPoint;
+	
+	}
+
+}
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -851,6 +878,20 @@ void UpdateAABBLineImGui(AABB& aabb, Segment& segment)
 
 	ImGui::DragFloat3("Origin", &segment.origin.x, 0.01f);
 	ImGui::DragFloat3("Diff", &segment.diff.x, 0.01f);
+
+	ImGui::End();
+
+}
+
+// ベジェ曲線ImGui
+void UpdateBezierImGui(Vector3 controlPoints[3]) 
+{
+
+	ImGui::Begin("Bezier");
+
+	ImGui::DragFloat3("P0", &controlPoints[0].x, 0.01f);
+	ImGui::DragFloat3("P1", &controlPoints[1].x, 0.01f);
+	ImGui::DragFloat3("P2", &controlPoints[2].x, 0.01f);
 
 	ImGui::End();
 
@@ -1222,12 +1263,47 @@ bool IsCollisionAABBLine(const AABB& aabb, const Line& line)
 /////////////////////
 
 // 垂直ベクトル取得
-Vector3 Perpendicular(const Vector3& vector) {
-	if (vector.x != 0.0f || vector.y != 0.0f) {
+Vector3 Perpendicular(const Vector3& vector) 
+{
+
+	if (vector.x != 0.0f || vector.y != 0.0f) 
+	{
+	
 		return {-vector.y, vector.x, 0.0f};
+	
 	}
 
 	return {0.0f, -vector.z, vector.y};
+
+}
+
+//////////////////////
+///  Bezier curve  ///
+//////////////////////
+
+// 線形補間
+Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) 
+{
+
+	Vector3 result;
+
+	result.x = (1.0f - t) * v1.x + t * v2.x;
+	result.y = (1.0f - t) * v1.y + t * v2.y;
+	result.z = (1.0f - t) * v1.z + t * v2.z;
+
+	return result;
+
+}
+
+// 2次ベジェ曲線上の点を求める
+Vector3 QuadraticBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, float t) 
+{
+
+	Vector3 p01 = Lerp(p0, p1, t);
+	Vector3 p12 = Lerp(p1, p2, t);
+
+	return Lerp(p01, p12, t);
+
 }
 
 ///////////////
