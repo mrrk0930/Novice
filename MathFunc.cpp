@@ -289,13 +289,13 @@ Matrix4x4 Transpose(const Matrix4x4& m)
 }
 
 // 加算
-Matrix4x4 Matrix4x4::operator+(const Matrix4x4& other) const { return Add(*this, other); }
+Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Add(m1, m2); }
 
 // 減算
-Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const { return Subtract(*this, other); }
+Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Subtract(m1, m2); }
 
 // 積
-Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const { return Multiply(*this, other); }
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Multiply(m1, m2); }
 
 //////////////////
 ///  Rotation  ///
