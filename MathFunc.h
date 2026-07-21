@@ -77,6 +77,15 @@ struct Line
 
 };
 
+struct Joint 
+{
+
+	Vector3 translate;
+	Vector3 rotate;
+	Vector3 scale;
+
+};
+
 ////////////////
 ///  Vector  ///
 ////////////////
@@ -191,6 +200,8 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
 //2次ベジェ曲線
 void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
+//階層構造描画
+void DrawSkeleton(Joint joints[], const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 
 /////////////////
 ///  Utility  ///
@@ -222,6 +233,10 @@ void UpdateAABBLineImGui(AABB& aabb, Segment& segment);
 
 //ベジェ曲線ImGui
 void UpdateBezierImGui(Vector3 controlPoints[3]);
+
+//階層構造ImGui
+void UpdateJointImGui(Joint joints[]);
+
 
 ////////////////////////
 ///  GeometryUtility ///

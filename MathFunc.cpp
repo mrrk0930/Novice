@@ -714,6 +714,41 @@ void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, const M
 
 }
 
+void DrawSkeleton(Joint joints[], const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) 
+{
+
+	Matrix4x4 shoulderWorld = MakeAffineMatrix(joints[0].scale, joints[0].rotate, joints[0].translate);
+
+	Matrix4x4 elbowLocal = MakeAffineMatrix(joints[1].scale, joints[1].rotate, joints[1].translate);
+
+	Matrix4x4 elbowWorld = Multiply(elbowLocal, shoulderWorld);
+
+	Matrix4x4 handLocal = MakeAffineMatrix(joints[2].scale, joints[2].rotate, joints[2].translate);
+
+	Matrix4x4 handWorld = Multiply(handLocal, elbowWorld);
+
+	Vector3 shoulderPos = Transform({0, 0, 0}, shoulderWorld);
+	Vector3 elbowPos = Transform({0, 0, 0}, elbowWorld);
+	Vector3 handPos = Transform({0, 0, 0}, handWorld);
+
+	Sphere sphere;
+	sphere.radius = 0.05f;
+
+	sphere.center = shoulderPos;
+	DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, RED);
+
+	sphere.center = elbowPos;
+	DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, GREEN);
+
+	sphere.center = handPos;
+	DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, BLUE);
+
+	DrawSegment({shoulderPos, Subtract(elbowPos, shoulderPos)}, viewProjectionMatrix, viewportMatrix, WHITE);
+
+	DrawSegment({elbowPos, Subtract(handPos, elbowPos)}, viewProjectionMatrix, viewportMatrix, WHITE);
+
+}
+
 /////////////////
 ///  Utility  ///
 /////////////////
@@ -892,6 +927,31 @@ void UpdateBezierImGui(Vector3 controlPoints[3])
 	ImGui::DragFloat3("P0", &controlPoints[0].x, 0.01f);
 	ImGui::DragFloat3("P1", &controlPoints[1].x, 0.01f);
 	ImGui::DragFloat3("P2", &controlPoints[2].x, 0.01f);
+
+	ImGui::End();
+
+}
+
+// 階層構造ImGui
+void UpdateJointImGui(Joint joints[]) 
+{
+
+	ImGui::Begin("Joint");
+
+	ImGui::Text("Shoulder");
+	ImGui::DragFloat3("Shoulder Translate", &joints[0].translate.x, 0.01f);
+	ImGui::DragFloat3("Shoulder Rotate", &joints[0].rotate.x, 0.01f);
+
+	ImGui::Separator();
+
+	ImGui::Text("Elbow");
+	ImGui::DragFloat3("Elbow Translate", &joints[1].translate.x, 0.01f);
+	ImGui::DragFloat3("Elbow Rotate", &joints[1].rotate.x, 0.01f);
+
+	ImGui::Separator();
+
+	ImGui::Text("Hand");
+	ImGui::DragFloat3("Hand Translate", &joints[2].translate.x, 0.01f);
 
 	ImGui::End();
 

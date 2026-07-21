@@ -24,11 +24,37 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	Vector3 cameraRotate{0.26f, 0.0f, 0.0f};
 
-	Vector3 controlPoints[3] = {
-	    {-0.8f, 0.58f, 1.0f},
-        {1.76f,  1.0f, -0.3f},
-        {0.94f,  -0.7f, 2.3f}
+	/*Vector3 translates[3] = {
+	    {0.2f, 1.0f, 0.0f},
+	    {0.4f, 0.0f, 0.0f},
+	    {0.3f, 0.0f, 0.0f}  
+	};
+
+	Vector3 rotates[3] = {
+	    {0.2f, 1.0f, -6.8f},
+        {0.4f, 0.0f, -1.4f},
+        {0.3f, 0.0f, 0.0f}
     };
+
+	Vector3 scales[3] = {
+	    {1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f} 
+	};*/
+
+	Joint joints[3];
+
+	joints[0].translate = {0.2f, 1.0f, 0.0f};
+	joints[0].rotate = {0.2f, 1.0f, -6.8f};
+	joints[0].scale = {1.0f, 1.0f, 1.0f};
+
+	joints[1].translate = {0.4f, 0.0f, 0.0f};
+	joints[1].rotate = {0.4f, 0.0f, -1.4f};
+	joints[1].scale = {1.0f, 1.0f, 1.0f};
+
+	joints[2].translate = {0.3f, 0.0f, 0.0f};
+	joints[2].rotate = {0.0f, 0.0f, 0.0f};
+	joints[2].scale = {0.3f, 0.0f, 0.0f};
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -51,7 +77,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		UpdateBezierImGui(controlPoints);
+		UpdateJointImGui(joints);
 
 		///
 		/// ↑更新処理ここまで
@@ -63,21 +89,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-
-		Sphere pointSphere;
-
-		pointSphere.radius = 0.01f;
-
-		pointSphere.center = controlPoints[0];
-		DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
-
-		pointSphere.center = controlPoints[1];
-		DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
-
-		pointSphere.center = controlPoints[2];
-		DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
-
-		DrawBezier(controlPoints[0], controlPoints[1], controlPoints[2], viewProjectionMatrix, viewportMatrix, BLUE);
+		DrawSkeleton(joints, viewProjectionMatrix, viewportMatrix);
 
 		///
 		/// ↑描画処理ここまで
