@@ -98,6 +98,27 @@ Vector3 Normalize(const Vector3& v)
 
 }
 
+// 二項演算子+
+Vector3 Vector3::operator+(const Vector3& v) const { return {x + v.x, y + v.y, z + v.z}; }
+
+// 二項演算子-
+Vector3 Vector3::operator-(const Vector3& v) const { return {x - v.x, y - v.y, z - v.z}; }
+
+// 単項演算子
+Vector3 Vector3::operator-() const { return {-x, -y, -z}; }
+
+// 複合代入演算子
+Vector3& Vector3::operator+=(const Vector3& v) 
+{
+
+	x += v.x;
+	y += v.y;
+	z += v.z;
+
+	return *this;
+
+}
+
 ////////////////
 ///  Matrix  ///
 ////////////////
@@ -952,6 +973,39 @@ void UpdateJointImGui(Joint joints[])
 
 	ImGui::Text("Hand");
 	ImGui::DragFloat3("Hand Translate", &joints[2].translate.x, 0.01f);
+
+	ImGui::End();
+
+}
+
+// 演算子ImGui
+void UpdateOperatorImGui(Vector3& v1, Vector3& v2, Vector3& addResult, Vector3& subResult, Vector3& minusResult, Vector3& addEqualResult) 
+{
+
+	ImGui::Begin("Operator Overload");
+
+	ImGui::DragFloat3("Vector1", &v1.x, 0.01f);
+	ImGui::DragFloat3("Vector2", &v2.x, 0.01f);
+
+	ImGui::Separator();
+
+	ImGui::Text("Binary +");
+	ImGui::Text("(%.2f, %.2f, %.2f)", addResult.x, addResult.y, addResult.z);
+
+	ImGui::Separator();
+
+	ImGui::Text("Binary -");
+	ImGui::Text("(%.2f, %.2f, %.2f)", subResult.x, subResult.y, subResult.z);
+
+	ImGui::Separator();
+
+	ImGui::Text("Unary -");
+	ImGui::Text("(%.2f, %.2f, %.2f)", minusResult.x, minusResult.y, minusResult.z);
+
+	ImGui::Separator();
+
+	ImGui::Text("Compound +=");
+	ImGui::Text("(%.2f, %.2f, %.2f)", addEqualResult.x, addEqualResult.y, addEqualResult.z);
 
 	ImGui::End();
 

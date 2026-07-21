@@ -24,37 +24,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	Vector3 cameraRotate{0.26f, 0.0f, 0.0f};
 
-	/*Vector3 translates[3] = {
-	    {0.2f, 1.0f, 0.0f},
-	    {0.4f, 0.0f, 0.0f},
-	    {0.3f, 0.0f, 0.0f}  
-	};
+	Vector3 vector1 = {0.2f, 1.0f, 0.0f};
+	Vector3 vector2 = {2.4f, 3.1f, 1.2f};
 
-	Vector3 rotates[3] = {
-	    {0.2f, 1.0f, -6.8f},
-        {0.4f, 0.0f, -1.4f},
-        {0.3f, 0.0f, 0.0f}
-    };
-
-	Vector3 scales[3] = {
-	    {1.0f, 1.0f, 1.0f},
-        {1.0f, 1.0f, 1.0f},
-        {1.0f, 1.0f, 1.0f} 
-	};*/
-
-	Joint joints[3];
-
-	joints[0].translate = {0.2f, 1.0f, 0.0f};
-	joints[0].rotate = {0.2f, 1.0f, -6.8f};
-	joints[0].scale = {1.0f, 1.0f, 1.0f};
-
-	joints[1].translate = {0.4f, 0.0f, 0.0f};
-	joints[1].rotate = {0.4f, 0.0f, -1.4f};
-	joints[1].scale = {1.0f, 1.0f, 1.0f};
-
-	joints[2].translate = {0.3f, 0.0f, 0.0f};
-	joints[2].rotate = {0.0f, 0.0f, 0.0f};
-	joints[2].scale = {0.3f, 0.0f, 0.0f};
+	Vector3 addResult;
+	Vector3 subResult;
+	Vector3 minusResult;
+	Vector3 addEqualResult;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -77,7 +53,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		UpdateJointImGui(joints);
+		// 二項演算子
+		addResult = vector1 + vector2;
+		subResult = vector1 - vector2;
+
+		// 単項演算子
+		minusResult = -vector1;
+
+		// 複合代入演算子
+		addEqualResult = vector1;
+		addEqualResult += vector2;
+
+		// ImGui表示
+		UpdateOperatorImGui(vector1, vector2, addResult, subResult, minusResult, addEqualResult);
 
 		///
 		/// ↑更新処理ここまで
@@ -86,10 +74,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 		/// ↓描画処理ここから
 		///
-
-		DrawGrid(viewProjectionMatrix, viewportMatrix);
-
-		DrawSkeleton(joints, viewProjectionMatrix, viewportMatrix);
 
 		///
 		/// ↑描画処理ここまで

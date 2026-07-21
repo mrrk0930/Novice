@@ -13,6 +13,16 @@ struct Vector3
 	float y;
 	float z;
 
+	//二項演算子+-
+	Vector3 operator+(const Vector3& v) const;
+	Vector3 operator-(const Vector3& v) const;
+
+	//単項演算子
+	Vector3 operator-() const;
+
+	//複合代入演算子
+	Vector3& operator+=(const Vector3& v);
+
 };
 
 struct Matrix4x4 
@@ -237,6 +247,8 @@ void UpdateBezierImGui(Vector3 controlPoints[3]);
 //階層構造ImGui
 void UpdateJointImGui(Joint joints[]);
 
+//演算子ImGui
+void UpdateOperatorImGui(Vector3& v1, Vector3& v2, Vector3& addResult, Vector3& subResult, Vector3& minusResult, Vector3& addEqualResult);
 
 ////////////////////////
 ///  GeometryUtility ///
