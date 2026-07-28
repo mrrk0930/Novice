@@ -42,6 +42,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Matrix4x4 subMatrix = m1 - m2;
 	Matrix4x4 mulMatrix = m1 * m2;
 
+	Vector3 scalarResult1 = vector1 * scalar;
+	Vector3 scalarResult2 = scalar * vector1;
+
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -85,6 +88,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ImGui
 		UpdateOperatorImGui(vector1, vector2, scalar, scalarResult, addResult, subResult, minusResult, addEqualResult, m1, m2, addMatrix, subMatrix, mulMatrix);
 
+		ImGui::Text("vector * scalar");
+		ImGui::Text("(%.2f %.2f %.2f)", scalarResult1.x, scalarResult1.y, scalarResult1.z);
+
+		ImGui::Text("scalar * vector");
+		ImGui::Text("(%.2f %.2f %.2f)", scalarResult2.x, scalarResult2.y, scalarResult2.z);
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -92,7 +101,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 		/// ↓描画処理ここから
 		///
-
+		//MatrixScreenPrintf(10, 20, "Add", addMatrix);
+		//MatrixScreenPrintf(10, 150, "Sub", subMatrix);
+		//MatrixScreenPrintf(10, 280, "Mul", mulMatrix);
 		///
 		/// ↑描画処理ここまで
 		///
