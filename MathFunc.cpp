@@ -283,10 +283,15 @@ Matrix4x4 Transpose(const Matrix4x4& m)
 
 }
 
+
+
+// 加算
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Add(m1, m2); }
 
+// 減算
 Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Subtract(m1, m2); }
 
+// 積
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Multiply(m1, m2); }
 
 //////////////////
@@ -1081,6 +1086,26 @@ void UpdateOperatorImGui(
 	
 	}
 
+	ImGui::Separator();
+	ImGui::Text("Matrix Add");
+
+	for (int y = 0; y < 4; y++) {
+		ImGui::Text("%.2f  %.2f  %.2f  %.2f", addMatrix.m[y][0], addMatrix.m[y][1], addMatrix.m[y][2], addMatrix.m[y][3]);
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Matrix Sub");
+
+	for (int y = 0; y < 4; y++) {
+		ImGui::Text("%.2f  %.2f  %.2f  %.2f", subMatrix.m[y][0], subMatrix.m[y][1], subMatrix.m[y][2], subMatrix.m[y][3]);
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Matrix Mul");
+
+	for (int y = 0; y < 4; y++) {
+		ImGui::Text("%.2f  %.2f  %.2f  %.2f", mulMatrix.m[y][0], mulMatrix.m[y][1], mulMatrix.m[y][2], mulMatrix.m[y][3]);
+	}
 	ImGui::End();
 
 }
