@@ -1,8 +1,6 @@
-#include "MathFunc.h"
 #include <Novice.h>
-#include <cmath>
-#include <imgui.h>
-#include <algorithm>
+#include "Game.h"
+
 
 const char kWindowTitle[] = "GC2B_05_ムロサキ_リク_タイトル";
 
@@ -11,39 +9,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, 1280, 720);
-
+	
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	const float kWindowWidth = 1280.0f;
-	const float kWindowHeight = 720.0f;
+	/*const float kWindowWidth = 1280.0f;
+	const float kWindowHeight = 720.0f;*/
 
-	// カメラ
-	Vector3 cameraTranslate{0.0f, 1.9f, -6.4f};
+	// ゲーム生成
+	Game game;
 
-	Vector3 cameraRotate{0.26f, 0.0f, 0.0f};
-
-	Vector3 vector1 = {0.2f, 1.0f, 0.0f};
-	Vector3 vector2 = {2.4f, 3.1f, 1.2f};
-
-	float scalar = 2.5f;
-
-	Vector3 scalarResult;
-	Vector3 addResult;
-	Vector3 subResult;
-	Vector3 minusResult;
-	Vector3 addEqualResult;
-
-	Matrix4x4 m1 = MakeIdentity4x4();
-	Matrix4x4 m2 = MakeIdentity4x4();
-
-	Matrix4x4 addMatrix = m1 + m2;
-	Matrix4x4 subMatrix = m1 - m2;
-	Matrix4x4 mulMatrix = m1 * m2;
-
-	Vector3 scalarResult1 = vector1 * scalar;
-	Vector3 scalarResult2 = scalar * vector1;
+	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -58,41 +35,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓更新処理ここから
 		///
 
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		Matrix4x4 viewProjectionMatrix = MakeViewProjectionMatrix(cameraTranslate, cameraRotate, kWindowWidth, kWindowHeight);
-
-		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, kWindowWidth, kWindowHeight, 0.0f, 1.0f);
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		// スカラー倍
-		scalarResult = vector1 * scalar;
-
-		// 二項演算子
-		addResult = vector1 + vector2;
-		subResult = vector1 - vector2;
-
-		// 単項演算子
-		minusResult = -vector1;
-
-		// 複合代入
-		addEqualResult = vector1;
-		addEqualResult += vector2;
-
-		// Matrix演算子
-		addMatrix = m1 + m2;
-		subMatrix = m1 - m2;
-		mulMatrix = m1 * m2;
-
-		// ImGui
-		UpdateOperatorImGui(vector1, vector2, scalar, scalarResult, addResult, subResult, minusResult, addEqualResult, m1, m2, addMatrix, subMatrix, mulMatrix);
-
-		ImGui::Text("vector * scalar");
-		ImGui::Text("(%.2f %.2f %.2f)", scalarResult1.x, scalarResult1.y, scalarResult1.z);
-
-		ImGui::Text("scalar * vector");
-		ImGui::Text("(%.2f %.2f %.2f)", scalarResult2.x, scalarResult2.y, scalarResult2.z);
+		game.Update();
 
 		///
 		/// ↑更新処理ここまで
@@ -101,9 +44,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 		/// ↓描画処理ここから
 		///
-		//MatrixScreenPrintf(10, 20, "Add", addMatrix);
-		//MatrixScreenPrintf(10, 150, "Sub", subMatrix);
-		//MatrixScreenPrintf(10, 280, "Mul", mulMatrix);
+		
+		game.Draw();
+
 		///
 		/// ↑描画処理ここまで
 		///
